@@ -3,7 +3,10 @@ import { cors } from 'hono/cors';
 import type { Bindings } from './types.js';
 import { chatRoute } from './chat.js';
 import { trainRoute } from './train.js';
-import { getChunkCount } from './knowledge.js';
+import { getChunkCount, seedMhtKnowledge } from './knowledge.js';
+
+// Pre-seed MHT knowledge base at startup (no-op if already populated)
+seedMhtKnowledge();
 
 const app = new Hono<{ Bindings: Bindings }>();
 
@@ -28,6 +31,23 @@ app.get('/widget/pluggable-bot.js', (c) => {
       'Access-Control-Allow-Origin': '*',
     },
   });
+});
+
+// MHT ePortal demo page — served from disk
+app.get('/mht', async (c) => {
+  try {
+    // @ts-ignore — node:fs/promises available under nodejs_compat
+    const fs = await import('node:fs/promises');
+    // @ts-ignore — import.meta.url available under wrangler dev (nodejs_compat)
+    const html = await fs.readFile(
+      // @ts-ignore
+      new URL('../../../../demo/mht-portal.html', import.meta.url),
+      'utf-8'
+    );
+    return c.html(html);
+  } catch {
+    return c.html('<h1>MHT portal page not found</h1>', 404);
+  }
 });
 
 // Demo index page
@@ -251,8 +271,8 @@ const DEMO_HTML = `<!DOCTYPE html>
 <script
   src="http://localhost:8787/widget/pluggable-bot.js"
   data-api-url="http://localhost:8787"
-  data-bot-name="Acme Bot"
-  data-primary-color="#4f46e5"
+  data-bot-name="MHT Assistant"
+  data-primary-color="#006341"
 ></script>
 
 <script>

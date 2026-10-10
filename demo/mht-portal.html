@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MHT ePortal — وزارة التراث والسياحة</title>
+  <style>
+    :root {
+      --primary: #006341;
+      --primary-dark: #004d32;
+      --primary-light: #008554;
+      --gold: #C9A227;
+      --gold-dark: #a88220;
+      --text: #1a1a1a;
+      --muted: #5f6368;
+      --bg: #f5f7f5;
+      --card: #ffffff;
+      --border: #d9e4dd;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: system-ui, 'Segoe UI', Arial, sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; }
+    a { color: var(--primary); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    /* Status badge — top-left, non-blocking */
+    #train-status {
+      position: fixed;
+      top: 1rem;
+      left: 1rem;
+      z-index: 9999;
+      background: var(--primary);
+      color: #fff;
+      padding: 0.35rem 0.85rem;
+      border-radius: 999px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      display: none;
+      box-shadow: 0 2px 6px rgba(0,99,65,0.35);
+    }
+    #train-status.visible { display: inline-block; }
+
+    /* Train button — top-right */
+    .train-btn {
+      position: fixed;
+      top: 1rem;
+      right: 1rem;
+      z-index: 9999;
+      background: var(--gold);
+      color: #fff;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.875rem;
+      font-weight: 600;
+      box-shadow: 0 2px 8px rgba(201,162,39,0.4);
+    }
+    .train-btn:hover { background: var(--gold-dark); }
+
+    /* Top bar */
+    .topbar {
+      background: var(--primary-dark);
+      color: rgba(255,255,255,0.85);
+      padding: 0.4rem 2rem;
+      font-size: 0.8rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .topbar a { color: rgba(255,255,255,0.85); }
+    .topbar a:hover { color: #fff; text-decoration: none; }
+
+    /* Nav */
+    nav {
+      background: var(--card);
+      border-bottom: 3px solid var(--gold);
+      padding: 0 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 72px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+    .nav-brand { display: flex; align-items: center; gap: 0.75rem; }
+    .nav-brand .emblem {
+      width: 48px;
+      height: 48px;
+      background: var(--primary);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--gold);
+      font-size: 1.5rem;
+    }
+    .nav-brand .brand-text { display: flex; flex-direction: column; line-height: 1.2; }
+    .nav-brand .brand-ar { font-size: 0.95rem; font-weight: 700; color: var(--primary); direction: rtl; }
+    .nav-brand .brand-en { font-size: 0.75rem; color: var(--muted); }
+    nav ul {
+      list-style: none;
+      display: flex;
+      gap: 0;
+      flex-wrap: wrap;
+    }
+    nav ul li a {
+      color: var(--text);
+      font-weight: 500;
+      font-size: 0.8rem;
+      padding: 0.5rem 0.65rem;
+      display: block;
+      border-radius: 4px;
+      transition: background 0.15s;
+    }
+    nav ul li a:hover { background: #f0f7f4; color: var(--primary); text-decoration: none; }
+
+    /* Hero */
+    .hero {
+      background: linear-gradient(135deg, var(--primary) 0%, #004d32 60%, #003322 100%);
+      color: #fff;
+      text-align: center;
+      padding: 5rem 2rem 4.5rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23C9A227' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+      pointer-events: none;
+    }
+    .hero-badge {
+      display: inline-block;
+      background: var(--gold);
+      color: #fff;
+      font-size: 0.8rem;
+      font-weight: 700;
+      padding: 0.3rem 1rem;
+      border-radius: 999px;
+      margin-bottom: 1.25rem;
+      letter-spacing: 0.05em;
+    }
+    .hero h1 { font-size: 2.75rem; font-weight: 800; margin-bottom: 0.5rem; }
+    .hero .hero-ar { font-size: 1.75rem; font-weight: 700; opacity: 0.9; margin-bottom: 1.25rem; direction: rtl; }
+    .hero p { font-size: 1.1rem; opacity: 0.9; max-width: 580px; margin: 0 auto 2rem; }
+    .hero .cta-group { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+    .hero .cta-primary {
+      background: var(--gold);
+      color: #fff;
+      padding: 0.8rem 2rem;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 0.95rem;
+      display: inline-block;
+      box-shadow: 0 4px 12px rgba(201,162,39,0.4);
+    }
+    .hero .cta-primary:hover { background: var(--gold-dark); text-decoration: none; }
+    .hero .cta-secondary {
+      background: rgba(255,255,255,0.15);
+      color: #fff;
+      padding: 0.8rem 2rem;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.95rem;
+      display: inline-block;
+      border: 1px solid rgba(255,255,255,0.3);
+    }
+    .hero .cta-secondary:hover { background: rgba(255,255,255,0.22); text-decoration: none; }
+
+    /* Sections */
+    .section-wrap { max-width: 1150px; margin: 0 auto; padding: 4rem 2rem; }
+    h2 { font-size: 1.85rem; font-weight: 700; margin-bottom: 0.5rem; color: var(--primary); }
+    .section-ar { direction: rtl; font-size: 1.1rem; font-weight: 600; color: var(--gold-dark); margin-bottom: 0.35rem; }
+    .subtitle { color: var(--muted); margin-bottom: 2.5rem; font-size: 0.95rem; }
+
+    /* Service cards */
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 1.25rem;
+    }
+    .service-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      transition: box-shadow 0.2s, transform 0.15s;
+      cursor: pointer;
+    }
+    .service-card:hover {
+      box-shadow: 0 6px 20px rgba(0,99,65,0.12);
+      transform: translateY(-2px);
+    }
+    .service-card .svc-icon {
+      font-size: 2rem;
+      margin-bottom: 0.75rem;
+    }
+    .service-card .svc-badge {
+      display: inline-block;
+      background: #e8f5ef;
+      color: var(--primary);
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 0.15rem 0.6rem;
+      border-radius: 4px;
+      margin-bottom: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .service-card h3 { font-size: 1rem; font-weight: 700; margin-bottom: 0.4rem; color: var(--text); }
+    .service-card p { color: var(--muted); font-size: 0.85rem; line-height: 1.55; }
+    .service-card .svc-link {
+      display: inline-block;
+      margin-top: 0.9rem;
+      color: var(--primary);
+      font-size: 0.83rem;
+      font-weight: 600;
+    }
+
+    /* FAQ */
+    details.faq-item {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      margin-bottom: 0.85rem;
+      background: var(--card);
+      overflow: hidden;
+    }
+    details.faq-item summary {
+      padding: 1.15rem 1.5rem;
+      font-weight: 600;
+      font-size: 0.95rem;
+      cursor: pointer;
+      list-style: none;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: var(--text);
+    }
+    details.faq-item summary::-webkit-details-marker { display: none; }
+    details.faq-item summary::after {
+      content: '+';
+      font-size: 1.25rem;
+      color: var(--primary);
+      font-weight: 400;
+    }
+    details[open].faq-item summary::after { content: '−'; }
+    details.faq-item .faq-body { padding: 0 1.5rem 1.15rem; color: var(--muted); font-size: 0.9rem; }
+
+    /* Footer */
+    footer {
+      background: var(--primary-dark);
+      color: rgba(255,255,255,0.8);
+      padding: 3rem 2rem 1.5rem;
+    }
+    .footer-inner {
+      max-width: 1150px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 2rem;
+      margin-bottom: 2rem;
+    }
+    .footer-col h4 { color: var(--gold); font-size: 0.9rem; font-weight: 700; margin-bottom: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; }
+    .footer-col p, .footer-col a { color: rgba(255,255,255,0.75); font-size: 0.85rem; line-height: 1.8; display: block; }
+    .footer-col a:hover { color: #fff; text-decoration: none; }
+    .footer-bottom {
+      max-width: 1150px;
+      margin: 0 auto;
+      border-top: 1px solid rgba(255,255,255,0.15);
+      padding-top: 1.25rem;
+      text-align: center;
+      font-size: 0.8rem;
+      color: rgba(255,255,255,0.5);
+    }
+    .footer-bottom a { color: rgba(255,255,255,0.6); }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      nav ul { display: none; }
+      .hero h1 { font-size: 1.85rem; }
+      .hero .hero-ar { font-size: 1.25rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Auto-train status badge (top-left) -->
+<span id="train-status"></span>
+
+<!-- Manual train button (top-right) -->
+<button class="train-btn" onclick="trainBot()">🤖 Train Bot on This Page</button>
+
+<!-- Top utility bar -->
+<div class="topbar">
+  <span>Sultanate of Oman &nbsp;|&nbsp; سلطنة عُمان</span>
+  <span>
+    <a href="#">English</a> &nbsp;|&nbsp; <a href="#">عربي</a>
+    &nbsp;&nbsp;|&nbsp;&nbsp;
+    <a href="mailto:info@mht.gov.om">info@mht.gov.om</a>
+    &nbsp;|&nbsp;
+    <a href="tel:+96824684000">+968 2468 4000</a>
+  </span>
+</div>
+
+<!-- Navigation -->
+<nav>
+  <div class="nav-brand">
+    <div class="emblem">🏛️</div>
+    <div class="brand-text">
+      <span class="brand-ar">وزارة التراث والسياحة</span>
+      <span class="brand-en">Ministry of Heritage &amp; Tourism — Sultanate of Oman</span>
+    </div>
+  </div>
+  <ul>
+    <li><a href="#services">Services</a></li>
+    <li><a href="#tourism">Tourism</a></li>
+    <li><a href="#heritage">Heritage</a></li>
+    <li><a href="#faq">FAQ</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- Hero -->
+<div class="hero">
+  <div class="hero-badge">🇴🇲 Official eServices Portal</div>
+  <h1>eServices Portal</h1>
+  <div class="hero-ar">خدماتنا الإلكترونية</div>
+  <p>Access all Ministry of Heritage &amp; Tourism services online — apply, renew, and track your applications from anywhere.</p>
+  <div class="cta-group">
+    <a class="cta-primary" href="#services">Browse Services →</a>
+    <a class="cta-secondary" href="#faq">How it works</a>
+  </div>
+</div>
+
+<!-- Services Section -->
+<section id="services">
+  <div class="section-wrap">
+    <div class="section-ar">خدماتنا</div>
+    <h2>Our eServices</h2>
+    <p class="subtitle">Select a service below to start your application. All services require a registered MHT ePortal account.</p>
+
+    <div class="services-grid">
+
+      <div class="service-card">
+        <div class="svc-icon">🪪</div>
+        <div class="svc-badge">Licensing</div>
+        <h3>Tourist Guide Licensing Services</h3>
+        <p>Apply for or renew your official tourist guide license. Requires a valid Omani ID, certified guide training, and applicable fees. Renewals due every two years.</p>
+        <a class="svc-link" href="#">Apply Now →</a>
+      </div>
+
+      <div class="service-card">
+        <div class="svc-icon">🧗</div>
+        <div class="svc-badge">Permits</div>
+        <h3>Adventure Tourism</h3>
+        <p>Obtain permits for hiking, desert safaris, diving, mountain climbing, and off-road tours. Operators must submit safety plans and renew permits annually.</p>
+        <a class="svc-link" href="#">Apply Now →</a>
+      </div>
+
+      <div class="service-card">
+        <div class="svc-icon">🕳️</div>
+        <div class="svc-badge">Access</div>
+        <h3>Cave Entry</h3>
+        <p>Book entry tickets to protected caves including Al Hoota Cave. Choose a date and time slot online. Group bookings require 3 business days advance notice.</p>
+        <a class="svc-link" href="#">Book Now →</a>
+      </div>
+
+      <div class="service-card">
+        <div class="svc-icon">🏗️</div>
+        <div class="svc-badge">Investment</div>
+        <h3>Tourism Land Investment Services</h3>
+        <p>License tourism development projects on designated land parcels. Submit a project proposal, environmental impact assessment, and proof of financial capacity. Approvals take 30–60 business days.</p>
+        <a class="svc-link" href="#">Apply Now →</a>
+      </div>
+
+      <div class="service-card">
+        <div class="svc-icon">🏨</div>
+        <div class="svc-badge">Licensing</div>
+        <h3>Hotel Licensing Services</h3>
+        <p>Register, classify, and annually renew hotels, hotel apartments, and tourist resorts. New licenses need a building completion certificate, fire safety clearance, and health inspection report.</p>
+        <a class="svc-link" href="#">Apply Now →</a>
+      </div>
+
+      <div class="service-card">
+        <div class="svc-icon">🎨</div>
+        <div class="svc-badge">Arts</div>
+        <h3>Fine Arts Band</h3>
+        <p>Apply for permits for artistic performances, exhibitions, and cultural events. Applications must be submitted at least 14 days before the event. International artists need additional clearance.</p>
+        <a class="svc-link" href="#">Apply Now →</a>
+      </div>
+
+      <div class="service-card">
+        <div class="svc-icon">📋</div>
+        <div class="svc-badge">Certificate</div>
+        <h3>Tourism Establishment Classification Certificate</h3>
+        <p>Restaurants, cafes, travel agencies, and tour operators must hold a valid Classification Certificate. Renewed every three years after an on-site inspection.</p>
+        <a class="svc-link" href="#">Apply Now →</a>
+      </div>
+
+      <div class="service-card">
+        <div class="svc-icon">🔍</div>
+        <div class="svc-badge">Monitoring</div>
+        <h3>Quality Monitoring</h3>
+        <p>Submit feedback, complaints, and quality reports about tourism establishments. MHT inspectors review reports within 5 business days. Violations may result in fines or license suspension.</p>
+        <a class="svc-link" href="#">Submit Report →</a>
+      </div>
+
+      <div class="service-card">
+        <div class="svc-icon">🎬</div>
+        <div class="svc-badge">Media</div>
+        <h3>Media and Content</h3>
+        <p>Obtain permits for filming, photography, and content creation at heritage sites. Commercial productions require a permit, location fee, and MHT-assigned liaison officer.</p>
+        <a class="svc-link" href="#">Apply Now →</a>
+      </div>
+
+      <div class="service-card">
+        <div class="svc-icon">ℹ️</div>
+        <div class="svc-badge">Licensing</div>
+        <h3>Tourism Center</h3>
+        <p>License visitor information and tourism service hubs. Operators must maintain bilingual (Arabic and English) staff and provide approved tourism materials. Annual renewal with compliance audit.</p>
+        <a class="svc-link" href="#">Apply Now →</a>
+      </div>
+
+      <div class="service-card">
+        <div class="svc-icon">🏛️</div>
+        <div class="svc-badge">Heritage</div>
+        <h3>Museum and Heritage House Services</h3>
+        <p>License, register, and get support for museums, heritage houses, and archaeological exhibition spaces. New licenses require an artifact inventory and curator qualifications.</p>
+        <a class="svc-link" href="#">Apply Now →</a>
+      </div>
+
+      <div class="service-card">
+        <div class="svc-icon">🎪</div>
+        <div class="svc-badge">Events</div>
+        <h3>Event and Filming</h3>
+        <p>Obtain permits for public tourism events, festivals, and professional filming. Organizers submit an event plan, safety assessment, and crowd management procedures. Liability insurance is required.</p>
+        <a class="svc-link" href="#">Apply Now →</a>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- Tourism Highlights -->
+<section id="tourism" style="background: linear-gradient(135deg, #e8f5ef 0%, #f0f9f5 100%); max-width: 100%; padding: 4rem 0;">
+  <div class="section-wrap" style="padding-top: 0; padding-bottom: 0;">
+    <div class="section-ar">السياحة في عُمان</div>
+    <h2>Discover Oman</h2>
+    <p class="subtitle">From ancient heritage sites to breathtaking natural wonders — Oman welcomes you.</p>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+      <div style="background:#fff; border-radius:10px; padding:1.25rem; text-align:center; border:1px solid var(--border);">
+        <div style="font-size:2.5rem; margin-bottom:0.5rem;">🏔️</div>
+        <h3 style="font-size:0.95rem; font-weight:700; margin-bottom:0.3rem;">Hajar Mountains</h3>
+        <p style="font-size:0.82rem; color:var(--muted);">Dramatic wadis and ancient villages await hikers and adventurers.</p>
+      </div>
+      <div style="background:#fff; border-radius:10px; padding:1.25rem; text-align:center; border:1px solid var(--border);">
+        <div style="font-size:2.5rem; margin-bottom:0.5rem;">🏜️</div>
+        <h3 style="font-size:0.95rem; font-weight:700; margin-bottom:0.3rem;">Wahiba Sands</h3>
+        <p style="font-size:0.82rem; color:var(--muted);">Experience the endless golden dunes of the Arabian desert.</p>
+      </div>
+      <div style="background:#fff; border-radius:10px; padding:1.25rem; text-align:center; border:1px solid var(--border);">
+        <div style="font-size:2.5rem; margin-bottom:0.5rem;">🌊</div>
+        <h3 style="font-size:0.95rem; font-weight:700; margin-bottom:0.3rem;">Musandam Fjords</h3>
+        <p style="font-size:0.82rem; color:var(--muted);">The "Norway of Arabia" — stunning fjords perfect for diving and dhow cruises.</p>
+      </div>
+      <div style="background:#fff; border-radius:10px; padding:1.25rem; text-align:center; border:1px solid var(--border);">
+        <div style="font-size:2.5rem; margin-bottom:0.5rem;">🕌</div>
+        <h3 style="font-size:0.95rem; font-weight:700; margin-bottom:0.3rem;">Grand Mosque</h3>
+        <p style="font-size:0.82rem; color:var(--muted);">The Sultan Qaboos Grand Mosque is one of the world's most beautiful.</p>
+      </div>
+      <div style="background:#fff; border-radius:10px; padding:1.25rem; text-align:center; border:1px solid var(--border);">
+        <div style="font-size:2.5rem; margin-bottom:0.5rem;">🦎</div>
+        <h3 style="font-size:0.95rem; font-weight:700; margin-bottom:0.3rem;">Ras Al Jinz</h3>
+        <p style="font-size:0.82rem; color:var(--muted);">Watch endangered green turtles nest on Oman's pristine shores.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Heritage Section -->
+<section id="heritage">
+  <div class="section-wrap">
+    <div class="section-ar">التراث العُماني</div>
+    <h2>Oman's Living Heritage</h2>
+    <p class="subtitle">The Ministry of Heritage &amp; Tourism safeguards Oman's rich cultural legacy for future generations.</p>
+    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap:1.25rem;">
+      <div style="background:var(--card); border:1px solid var(--border); border-radius:12px; padding:1.5rem;">
+        <div style="font-size:2rem; margin-bottom:0.75rem;">🏯</div>
+        <h3 style="font-size:1rem; font-weight:700; margin-bottom:0.4rem;">Forts &amp; Castles</h3>
+        <p style="color:var(--muted); font-size:0.87rem;">Over 500 forts and castles across Oman preserve military and architectural heritage. Many are UNESCO-listed.</p>
+      </div>
+      <div style="background:var(--card); border:1px solid var(--border); border-radius:12px; padding:1.5rem;">
+        <div style="font-size:2rem; margin-bottom:0.75rem;">🏺</div>
+        <h3 style="font-size:1rem; font-weight:700; margin-bottom:0.4rem;">Archaeological Sites</h3>
+        <p style="color:var(--muted); font-size:0.87rem;">Sites like Bat, Al-Khutm and Al-Ayn date back over 5,000 years. The MHT leads ongoing conservation efforts.</p>
+      </div>
+      <div style="background:var(--card); border:1px solid var(--border); border-radius:12px; padding:1.5rem;">
+        <div style="font-size:2rem; margin-bottom:0.75rem;">🎶</div>
+        <h3 style="font-size:1rem; font-weight:700; margin-bottom:0.4rem;">Intangible Heritage</h3>
+        <p style="color:var(--muted); font-size:0.87rem;">Omani music, dance, crafts, and traditional knowledge are registered and promoted through cultural programs.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ Section -->
+<section id="faq" style="background: var(--card); max-width: 100%; padding: 4rem 0;">
+  <div class="section-wrap" style="padding-top: 0; padding-bottom: 0;">
+    <div class="section-ar">الأسئلة الشائعة</div>
+    <h2>Frequently Asked Questions</h2>
+    <p class="subtitle">Have a question? Ask our MHT Assistant bot in the bottom-right corner for instant answers.</p>
+
+    <details class="faq-item" open>
+      <summary>How do I apply for eServices on the MHT portal?</summary>
+      <div class="faq-body">
+        Create an account on the ePortal using your Omani civil ID or Resident ID. After logging in, select the desired service, fill in the application form, upload required documents (PDF or JPG), and pay any applicable fees online. You will receive SMS and email notifications on your application status.
+      </div>
+    </details>
+
+    <details class="faq-item">
+      <summary>What documents are typically required for service applications?</summary>
+      <div class="faq-body">
+        Required documents vary by service but commonly include: a valid Omani national ID or residency card, a recent passport-size photo, relevant certificates or qualifications, proof of payment of fees, and any sector-specific documents such as a building completion certificate (for hotel licensing) or a safety plan (for adventure tourism). Check the specific service page for the exact checklist.
+      </div>
+    </details>
+
+    <details class="faq-item">
+      <summary>How long does it take to get an application approved?</summary>
+      <div class="faq-body">
+        Processing times vary by service type. Standard licensing applications (tourist guide, hotel) are typically processed within 5–10 business days. Tourism Land Investment applications may take 30–60 business days due to required inspections. You can track your application status in real time through your ePortal account dashboard.
+      </div>
+    </details>
+
+    <details class="faq-item">
+      <summary>Does the portal support Arabic and English?</summary>
+      <div class="faq-body">
+        Yes. The MHT ePortal fully supports both Arabic and English. Use the language toggle in the navigation bar to switch. All official certificates and documents are issued in Arabic; English translations may be requested for an additional fee.
+      </div>
+    </details>
+
+    <details class="faq-item">
+      <summary>How do I contact MHT technical support for portal issues?</summary>
+      <div class="faq-body">
+        For technical support, email info@mht.gov.om or call +968 2468 4000. The ePortal technical support hotline is available from 8:00 AM to 8:00 PM, Sunday to Thursday. Ministry working hours are 7:30 AM to 2:30 PM, Sunday to Thursday.
+      </div>
+    </details>
+
+  </div>
+</section>
+
+<!-- Contact / Footer -->
+<footer id="contact">
+  <div class="footer-inner">
+    <div class="footer-col">
+      <h4>وزارة التراث والسياحة</h4>
+      <p>Ministry of Heritage &amp; Tourism</p>
+      <p>Sultanate of Oman</p>
+    </div>
+    <div class="footer-col">
+      <h4>Contact</h4>
+      <p>P.O. Box 550, Muscat, Oman</p>
+      <a href="tel:+96824684000">+968 2468 4000</a>
+      <a href="mailto:info@mht.gov.om">info@mht.gov.om</a>
+    </div>
+    <div class="footer-col">
+      <h4>Working Hours</h4>
+      <p>Sunday – Thursday</p>
+      <p>7:30 AM – 2:30 PM</p>
+      <p>ePortal support: 8 AM – 8 PM</p>
+    </div>
+    <div class="footer-col">
+      <h4>Quick Links</h4>
+      <a href="#services">eServices</a>
+      <a href="#faq">FAQ</a>
+      <a href="#">Privacy Policy</a>
+      <a href="#">Terms of Use</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    &copy; 2025 Ministry of Heritage &amp; Tourism, Sultanate of Oman &nbsp;·&nbsp;
+    <a href="#">mht.gov.om</a> &nbsp;·&nbsp;
+    Powered by MHT ePortal
+  </div>
+</footer>
+
+<!-- Pluggable Bot widget — MHT branded -->
+<script
+  src="http://localhost:8787/widget/pluggable-bot.js"
+  data-api-url="http://localhost:8787"
+  data-bot-name="MHT Assistant"
+  data-primary-color="#006341"
+></script>
+
+<script>
+  /* Manual train trigger */
+  function trainBot() {
+    fetch('http://localhost:8787/api/train', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        url: 'https://stg-eportal.mht.gov.om/',
+        title: 'MHT ePortal — Ministry of Heritage & Tourism',
+        content: document.body.innerText,
+      }),
+    })
+      .then(function(r) { return r.json(); })
+      .then(function(d) {
+        alert('Bot trained! Added ' + d.chunksAdded + ' chunks. Total: ' + d.total + '.');
+      })
+      .catch(function(err) {
+        alert('Training failed: ' + err.message);
+      });
+  }
+
+  /* Auto-train on page load — non-blocking, shows status badge */
+  document.addEventListener('DOMContentLoaded', function() {
+    var badge = document.getElementById('train-status');
+    badge.textContent = 'Training…';
+    badge.classList.add('visible');
+    badge.style.background = '#888';
+
+    fetch('http://localhost:8787/api/train', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        url: 'https://stg-eportal.mht.gov.om/',
+        title: 'MHT ePortal',
+        content: document.body.innerText,
+      }),
+    })
+      .then(function(r) { return r.json(); })
+      .then(function() {
+        badge.textContent = 'Bot trained ✓';
+        badge.style.background = '#006341';
+        setTimeout(function() { badge.classList.remove('visible'); }, 4000);
+      })
+      .catch(function() {
+        badge.textContent = 'Training skipped';
+        badge.style.background = '#888';
+        setTimeout(function() { badge.classList.remove('visible'); }, 3000);
+      });
+  });
+</script>
+
+</body>
+</html>
