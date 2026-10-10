@@ -1,0 +1,33 @@
+{
+  "id": "FEAT-001",
+  "type": "chore",
+  "description": "Monorepo scaffold: create all config files, package.jsons, tsconfigs, wrangler.toml, .gitignore, and empty directory placeholders. No source logic yet — just a buildable/installable skeleton that later FEATs fill in.",
+  "status": "completed",
+  "steps": [
+    "Create root package.json: name='pluggable-bot', private=true, workspaces=['packages/*'], scripts: { 'build': 'npm run build -w packages/widget && npm run typecheck -w packages/server', 'dev': 'npm run dev -w packages/server', 'install:all': 'npm install' }. No root-level deps.",
+    "Create packages/widget/package.json: name='@pluggable-bot/widget', version='0.1.0', private=true, type='module', scripts: { 'build': 'esbuild src/index.ts --bundle --format=iife --global-name=PluggableBotLoader --minify --outfile=dist/pluggable-bot.js --target=es2020', 'build:dev': 'esbuild src/index.ts --bundle --format=iife --global-name=PluggableBotLoader --sourcemap --outfile=dist/pluggable-bot.js --target=es2020', 'typecheck': 'tsc --noEmit' }. devDependencies: { 'esbuild': '0.28.2', 'typescript': '7.0.2' }. No runtime dependencies.",
+    "Create packages/server/package.json: name='@pluggable-bot/server', version='0.1.0', private=true, type='module', scripts: { 'dev': 'wrangler dev --port 8787', 'typecheck': 'tsc --noEmit', 'deploy': 'wrangler deploy' }. dependencies: { 'hono': '4.13.13', 'openai': '7.32.0' }. devDependencies: { 'wrangler': '4.149.0', 'typescript': '7.0.2', '@cloudflare/workers-types': '5.20261010.1', '@hono/node-server': '1.13.7' }.",
+    "Create packages/widget/tsconfig.json: { compilerOptions: { target: 'ES2020', module: 'ESNext', moduleResolution: 'bundler', lib: ['DOM', 'DOM.Iterable', 'ES2020'], strict: true, noEmit: true, skipLibCheck: true }, include: ['src'] }.",
+    "Create packages/server/tsconfig.json: { compilerOptions: { target: 'ES2020', module: 'ESNext', moduleResolution: 'bundler', lib: ['ES2020'], types: ['@cloudflare/workers-types'], strict: true, noEmit: true, skipLibCheck: true }, include: ['src'] }.",
+    "Create packages/server/wrangler.toml: name='pluggable-bot', main='src/index.ts', compatibility_date='2024-09-23'. Add [vars] section with OPENAI_API_KEY=''. Add .dev.vars instructions in a comment.",
+    "Create root .gitignore: node_modules/, dist/, packages/server/data/knowledge.json, .dev.vars, *.js.map, .wrangler/.",
+    "Create placeholder files: packages/widget/dist/.gitkeep, packages/server/data/.gitkeep.",
+    "Create minimal stub source files so tsc --noEmit passes immediately: packages/widget/src/index.ts (export {}), packages/widget/src/widget.ts (export {}), packages/widget/src/stream.ts (export {}), packages/widget/src/context.ts (export {}), packages/widget/src/styles.ts (export const STYLES = ''). packages/server/src/index.ts (export default {}), packages/server/src/types.ts (export {}), packages/server/src/knowledge.ts (export {}), packages/server/src/chat.ts (export {}), packages/server/src/train.ts (export {}).",
+    "Run 'npm install' from repo root to install all workspace dependencies."
+  ],
+  "acceptance_criteria": [
+    "npm install from repo root exits 0 with no unresolved peer deps",
+    "npx tsc --noEmit -p packages/widget/tsconfig.json exits 0",
+    "npx tsc --noEmit -p packages/server/tsconfig.json exits 0",
+    "packages/widget/package.json, packages/server/package.json, root package.json all exist with correct content",
+    "packages/server/wrangler.toml exists with correct name, main, compatibility_date, and [vars]",
+    ".gitignore exists and includes node_modules/, dist/, knowledge.json"
+  ],
+  "verification": [
+    "cd c:\\Users\\mac\\Documents\\Github\\pluggable-bot && npm install — exits 0",
+    "npx tsc --noEmit -p packages/widget/tsconfig.json — exits 0",
+    "npx tsc --noEmit -p packages/server/tsconfig.json — exits 0"
+  ],
+  "blocked_reason": null,
+  "findings": "All files created and verified. npm install exits 0 (42 packages installed, 1 high vulnerability in transitive deps — not blocking). Both tsc --noEmit checks exit 0. esbuild and workerd post-install scripts were blocked by npm allow-scripts policy; running npm approve-scripts may be needed before the widget build step in FEAT-002."
+}

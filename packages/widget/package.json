@@ -1,0 +1,15 @@
+{
+  "name": "@pluggable-bot/widget",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "esbuild src/index.ts --bundle --format=iife --global-name=PluggableBotLoader --minify --outfile=dist/pluggable-bot.js --target=es2020",
+    "build:dev": "esbuild src/index.ts --bundle --format=iife --global-name=PluggableBotLoader --sourcemap --outfile=dist/pluggable-bot.js --target=es2020",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "esbuild": "0.28.2",
+    "typescript": "7.0.2"
+  }
+}

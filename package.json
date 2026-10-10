@@ -1,0 +1,12 @@
+{
+  "name": "pluggable-bot",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "npm run build -w packages/widget && npm run typecheck -w packages/server",
+    "dev": "npm run dev -w packages/server",
+    "install:all": "npm install"
+  }
+}

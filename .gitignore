@@ -1,0 +1,6 @@
+node_modules/
+dist/
+packages/server/data/knowledge.json
+.dev.vars
+*.js.map
+.wrangler/
