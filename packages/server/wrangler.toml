@@ -1,6 +1,7 @@
 name = "pluggable-bot"
 main = "src/index.ts"
 compatibility_date = "2024-09-23"
+compatibility_flags = ["nodejs_compat"]
 
 # To set secrets locally, create a .dev.vars file in packages/server/ with:
 # OPENAI_API_KEY=sk-...

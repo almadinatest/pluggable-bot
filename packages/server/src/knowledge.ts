@@ -3,21 +3,20 @@ import type { KnowledgeChunk } from './types.js';
 // In-memory store — populated at startup from disk (wrangler dev only) and by /api/train
 let chunks: KnowledgeChunk[] = [];
 
-/**
- * Dynamic import that bypasses TypeScript's static analysis.
- * This lets us optionally load node:fs/promises without requiring @types/node
- * in the Workers tsconfig. Silently fails in prod Workers where node:fs is absent.
- */
-// eslint-disable-next-line @typescript-eslint/no-implied-eval
-const dynamicImport = new Function('m', 'return import(m)') as (m: string) => Promise<unknown>;
+type FsModule = {
+  readFile: (path: string, enc: string) => Promise<string>;
+  mkdir: (path: string, opts: { recursive: boolean }) => Promise<void>;
+  writeFile: (path: string, data: string, enc: string) => Promise<void>;
+};
 
+/**
+ * Try to load node:fs/promises via a standard dynamic import.
+ * Works under wrangler dev (nodejs_compat); throws in prod Workers — caught below.
+ */
 // Try to seed from disk on module init (only works under wrangler dev with nodejs_compat)
 try {
-  const fs = await dynamicImport('node:fs/promises') as {
-    readFile: (path: string, enc: string) => Promise<string>;
-    mkdir: (path: string, opts: { recursive: boolean }) => Promise<void>;
-    writeFile: (path: string, data: string, enc: string) => Promise<void>;
-  };
+  // @ts-ignore — node:fs/promises is not in @cloudflare/workers-types but is available under nodejs_compat
+  const fs = await import('node:fs/promises') as FsModule;
   const raw = await fs.readFile('data/knowledge.json', 'utf8');
   const parsed = JSON.parse(raw) as KnowledgeChunk[];
   if (Array.isArray(parsed)) {
@@ -30,11 +29,8 @@ try {
 /** Persist current chunks to disk (best-effort, silently ignored in prod). */
 async function persist(): Promise<void> {
   try {
-    const fs = await dynamicImport('node:fs/promises') as {
-      readFile: (path: string, enc: string) => Promise<string>;
-      mkdir: (path: string, opts: { recursive: boolean }) => Promise<void>;
-      writeFile: (path: string, data: string, enc: string) => Promise<void>;
-    };
+    // @ts-ignore — node:fs/promises is not in @cloudflare/workers-types but is available under nodejs_compat
+    const fs = await import('node:fs/promises') as FsModule;
     await fs.mkdir('data', { recursive: true });
     await fs.writeFile('data/knowledge.json', JSON.stringify(chunks, null, 2), 'utf8');
   } catch {
