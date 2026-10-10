@@ -21,6 +21,7 @@
     "node": "24.x"
   },
   "allowScripts": {
+    "esbuild@0.25.12": true,
     "esbuild@0.28.2": true,
     "workerd@1.20261006.1": true
   }
