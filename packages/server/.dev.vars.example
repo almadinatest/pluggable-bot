@@ -1,0 +1,24 @@
+# Copy this file to .dev.vars and fill in your key.
+# .dev.vars is gitignored — never commit real keys.
+#
+# ── Free LLM via OpenRouter ───────────────────────────────────────────────────
+# Get a FREE API key at https://openrouter.ai — no credit card required.
+# Free tier: 20 req/min, 50 req/day (200 req/day after $10 lifetime spend).
+OPENROUTER_API_KEY=sk-or-v1-your-key-here
+
+# Optional: pin a specific free model.
+# Default is "openrouter/auto" which always routes to an available free model.
+#
+# Verified free models — October 2026 (https://openrouter.ai/models?q=:free):
+#LLM_MODEL=openrouter/auto                            # auto-pick best available (recommended)
+#LLM_MODEL=nvidia/nemotron-3-super-120b-a12b:free     # 120B MoE, great for chat/agents
+#LLM_MODEL=nvidia/nemotron-3.5-lightning:free         # 1M context, fast
+#LLM_MODEL=qwen/qwen3.8-27b:free                      # 27B multilingual chat
+#LLM_MODEL=poolside/laguna-s-2.1:free                 # highest-volume free model
+#LLM_MODEL=google/gemma-4-31b-it:free                 # multimodal (text + image + video)
+#
+# ⚠️  Free model IDs rotate — check https://openrouter.ai/models?q=:free for
+#     the current list before pinning a specific model.
+#
+# ── Legacy OpenAI key (optional, not needed if OPENROUTER_API_KEY is set) ─────
+#OPENAI_API_KEY=sk-...

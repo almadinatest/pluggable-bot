@@ -33,21 +33,11 @@ app.get('/widget/pluggable-bot.js', (c) => {
   });
 });
 
-// MHT ePortal demo page — served from disk
-app.get('/mht', async (c) => {
-  try {
-    // @ts-ignore — node:fs/promises available under nodejs_compat
-    const fs = await import('node:fs/promises');
-    // @ts-ignore — import.meta.url available under wrangler dev (nodejs_compat)
-    const html = await fs.readFile(
-      // @ts-ignore
-      new URL('../../../../demo/mht-portal.html', import.meta.url),
-      'utf-8'
-    );
-    return c.html(html);
-  } catch {
-    return c.html('<h1>MHT portal page not found</h1>', 404);
-  }
+// MHT ePortal demo page — inlined at build time (Workers runtime cannot read arbitrary disk paths)
+
+app.get('/mht', (c) => {
+  const html = c.env?.MHT_HTML ?? '<h1>MHT portal page not found</h1>';
+  return c.html(html);
 });
 
 // Demo index page

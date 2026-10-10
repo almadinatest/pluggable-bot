@@ -6,7 +6,16 @@
   ],
   "scripts": {
     "build": "npm run build -w packages/widget && npm run typecheck -w packages/server",
-    "dev": "npm run dev -w packages/server",
-    "install:all": "npm install"
+    "start": "npm run build -w packages/widget && npm run dev -w packages/server",
+    "start:dev": "concurrently --names \"widget,server\" --prefix-colors \"cyan,magenta\" \"npm run build:dev -w packages/widget\" \"npm run dev -w packages/server\"",
+    "typecheck": "npm run typecheck -w packages/widget && npm run typecheck -w packages/server",
+    "dev": "npm run dev -w packages/server"
+  },
+  "devDependencies": {
+    "concurrently": "10.0.6"
+  },
+  "allowScripts": {
+    "esbuild@0.28.2": true,
+    "workerd@1.20261006.1": true
   }
 }
