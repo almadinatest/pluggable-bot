@@ -1,6 +1,6 @@
 import type { Hono } from 'hono';
 import OpenAI from 'openai';
-import type { Bindings, ChatRequest, Message } from './types.js';
+import type { ChatRequest, Message } from './types.js';
 import { search } from './knowledge.js';
 
 const enc = new TextEncoder();
@@ -45,7 +45,7 @@ function buildClient(apiKey: string): OpenAI {
 }
 
 // ── Route ─────────────────────────────────────────────────────────────────────
-export function chatRoute(app: Hono<{ Bindings: Bindings }>): void {
+export function chatRoute(app: Hono): void {
   app.post('/api/chat', async (c) => {
     // ── Parse body ────────────────────────────────────────────────────────────
     let body: ChatRequest;
@@ -84,11 +84,11 @@ export function chatRoute(app: Hono<{ Bindings: Bindings }>): void {
 
     // ── Resolve API key: prefer OPENROUTER_API_KEY, fall back to OPENAI_API_KEY
     // (OpenRouter accepts the same key format for both fields.)
-    const apiKey = c.env?.OPENROUTER_API_KEY || c.env?.OPENAI_API_KEY;
+    const apiKey = process.env.OPENROUTER_API_KEY || process.env.OPENAI_API_KEY;
 
     // ── LLM: real streaming via OpenRouter ────────────────────────────────────
     if (apiKey) {
-      const model = c.env?.LLM_MODEL || FREE_MODELS[0];
+      const model = process.env.LLM_MODEL || FREE_MODELS[0];
       const client = buildClient(apiKey);
 
       const readable = new ReadableStream({

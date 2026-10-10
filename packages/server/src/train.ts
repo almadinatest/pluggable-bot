@@ -1,8 +1,8 @@
 import type { Hono } from 'hono';
-import type { Bindings, TrainRequest } from './types.js';
+import type { TrainRequest } from './types.js';
 import { addChunks, getChunkCount, splitIntoChunks } from './knowledge.js';
 
-export function trainRoute(app: Hono<{ Bindings: Bindings }>): void {
+export function trainRoute(app: Hono): void {
   app.post('/api/train', async (c) => {
     let body: TrainRequest;
     try {

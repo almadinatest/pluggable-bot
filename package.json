@@ -5,14 +5,17 @@
     "packages/*"
   ],
   "scripts": {
-    "build": "npm run build -w packages/widget && npm run typecheck -w packages/server",
-    "start": "npm run build -w packages/widget && npm run dev -w packages/server",
-    "start:dev": "concurrently --names \"widget,server\" --prefix-colors \"cyan,magenta\" \"npm run build:dev -w packages/widget\" \"npm run dev -w packages/server\"",
-    "typecheck": "npm run typecheck -w packages/widget && npm run typecheck -w packages/server",
-    "dev": "npm run dev -w packages/server"
+    "build": "npm run build -w packages/widget",
+    "start": "npm run build -w packages/widget && npx dotenv -e .env.local -- npx tsx packages/server/src/local-dev.ts",
+    "start:dev": "concurrently --names \"widget,server\" --prefix-colors \"cyan,magenta\" \"npm run build:dev -w packages/widget\" \"npx dotenv -e .env.local -- npx tsx watch packages/server/src/local-dev.ts\"",
+    "dev": "npx dotenv -e .env.local -- npx tsx watch packages/server/src/local-dev.ts",
+    "typecheck": "npm run typecheck -w packages/widget && npm run typecheck -w packages/server"
   },
   "devDependencies": {
-    "concurrently": "10.0.6"
+    "@types/node": "^22.20.5",
+    "concurrently": "10.0.6",
+    "dotenv-cli": "7.4.4",
+    "typescript": "7.0.2"
   },
   "allowScripts": {
     "esbuild@0.28.2": true,

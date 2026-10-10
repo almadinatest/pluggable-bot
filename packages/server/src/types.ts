@@ -30,9 +30,9 @@ export interface TrainRequest {
 }
 
 export interface Bindings {
-  OPENAI_API_KEY: string;   // kept for backwards-compat (optional)
+  OPENAI_API_KEY: string;   // kept for reference (not used as Hono generic — env vars come from process.env)
   OPENROUTER_API_KEY: string;
-  LLM_MODEL: string;        // override default model, e.g. "google/gemma-3-27b-it:free"
+  LLM_MODEL: string;
   WIDGET_JS: string;
   MHT_HTML: string;
 }
