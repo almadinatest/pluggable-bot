@@ -6,3 +6,5 @@ packages/server/data/knowledge.json
 .wrangler/
 .env
 .env.local
+
+.vercel
