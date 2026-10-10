@@ -2,13 +2,6 @@
   "version": 2,
   "buildCommand": "npm run build",
   "outputDirectory": ".",
-  "functions": {
-    "api/index.ts": {
-      "runtime": "nodejs22.x",
-      "memory": 1024,
-      "maxDuration": 30
-    }
-  },
   "rewrites": [
     { "source": "/api/(.*)", "destination": "/api/index" },
     { "source": "/widget/(.*)", "destination": "/api/index" },

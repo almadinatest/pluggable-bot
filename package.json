@@ -17,6 +17,7 @@
     "dotenv-cli": "7.4.4",
     "typescript": "7.0.2"
   },
+  "engines": { "node": "24.x" },
   "allowScripts": {
     "esbuild@0.28.2": true,
     "workerd@1.20261006.1": true
