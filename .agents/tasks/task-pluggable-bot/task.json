@@ -1,0 +1,7 @@
+{
+  "task_id": "task-pluggable-bot",
+  "task_description": "Build a pluggable chat-bot widget (Vanilla TS + Custom Element) with a Hono/Cloudflare Workers backend. Widget streams LLM tokens via SSE, injects page context, and is embeddable on any website via a single <script> tag. Backend supports chat (OpenAI gpt-4o-mini or mock fallback) and a /api/train endpoint for knowledge ingestion.",
+  "status": "completed",
+  "feature_order": ["FEAT-001", "FEAT-002", "FEAT-003"],
+  "blocked_reason": null
+}

@@ -8,3 +8,6 @@ compatibility_date = "2024-09-23"
 
 [vars]
 OPENAI_API_KEY = ""
+
+[text_blobs]
+WIDGET_JS = "../widget/dist/pluggable-bot.js"
