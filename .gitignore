@@ -8,3 +8,4 @@ packages/server/data/knowledge.json
 .env.local
 
 .vercel
+.env*
