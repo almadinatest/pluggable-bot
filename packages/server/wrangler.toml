@@ -12,6 +12,14 @@ OPENAI_API_KEY = ""
 OPENROUTER_API_KEY = ""
 LLM_MODEL = "openrouter/auto"
 
-[text_blobs]
-WIDGET_JS = "../widget/dist/pluggable-bot.js"
-MHT_HTML = "../../demo/mht-portal.html"
+# Replaces [text_blobs] for ES Module Workers
+[[rules]]
+globs = ["**/*.js"]
+type = "Text"
+fallthrough = true
+
+[[rules]]
+globs = ["**/*.html"]
+type = "Text"
+fallthrough = true
+

@@ -1,20 +1,18 @@
 import { Hono } from 'hono';
 import { cors } from 'hono/cors';
-import { readFile } from 'node:fs/promises';
-import { join } from 'node:path';
-import { fileURLToPath } from 'node:url';
 import { chatRoute } from './chat.js';
 import { trainRoute } from './train.js';
 import { getChunkCount, seedMhtKnowledge } from './knowledge.js';
 
+// Import assets directly as strings via ES Modules
+// Paths match the relative positions based on your original wrangler.toml configuration
+// Fix the paths to target specific files
+import WIDGET_JS from "../../widget/dist/pluggable-bot.js";
+import MHT_HTML from "../../../demo/mht-portal.html";
+import INDEX_HTML from "../../../demo/index.html";
+
 // Pre-seed MHT knowledge base at startup (no-op if already populated)
 seedMhtKnowledge();
-
-// Resolve the project root — works both locally (from packages/server/src/) and on Vercel
-// process.cwd() on Vercel is the repo root; __dirname here is packages/server/src/
-const __dirname = fileURLToPath(new URL('.', import.meta.url));
-// Project root = three levels up from packages/server/src/
-const PROJECT_ROOT = join(__dirname, '..', '..', '..');
 
 const app = new Hono();
 
@@ -29,46 +27,39 @@ app.get('/api/health', (c) => {
   return c.json({ status: 'ok', chunks: getChunkCount() });
 });
 
-// Serve the compiled widget JS — read from disk (no wrangler text_blobs needed)
-app.get('/widget/pluggable-bot.js', async (c) => {
-  try {
-    const widgetPath = join(PROJECT_ROOT, 'packages', 'widget', 'dist', 'pluggable-bot.js');
-    const js = await readFile(widgetPath, 'utf8');
-    return new Response(js, {
-      headers: {
-        'Content-Type': 'application/javascript',
-        'Cache-Control': 'public, max-age=3600',
-        'Access-Control-Allow-Origin': '*',
-      },
-    });
-  } catch {
+// Serve the compiled widget JS — read statically at compilation
+app.get('/widget/pluggable-bot.js', (c) => {
+  // Check if your build has produced content, if not, output a fallback string
+  if (!WIDGET_JS || WIDGET_JS.trim() === "") {
     return new Response('// widget not built yet — run: npm run build', {
       status: 404,
       headers: { 'Content-Type': 'application/javascript' },
     });
   }
+
+  return new Response(WIDGET_JS, {
+    headers: {
+      'Content-Type': 'application/javascript',
+      'Cache-Control': 'public, max-age=3600',
+      'Access-Control-Allow-Origin': '*',
+    },
+  });
 });
 
-// MHT ePortal demo page — read from disk
-app.get('/mht', async (c) => {
-  try {
-    const htmlPath = join(PROJECT_ROOT, 'demo', 'mht-portal.html');
-    const html = await readFile(htmlPath, 'utf8');
-    return c.html(html);
-  } catch {
+// MHT ePortal demo page — served directly from compilation bundle
+app.get('/mht', (c) => {
+  if (!MHT_HTML) {
     return c.html('<h1>MHT portal page not found</h1>', 404);
   }
+  return c.html(MHT_HTML);
 });
 
-// Demo index page — read from disk, fall back to inline HTML
-app.get('/', async (c) => {
-  try {
-    const indexPath = join(PROJECT_ROOT, 'demo', 'index.html');
-    const html = await readFile(indexPath, 'utf8');
-    return c.html(html);
-  } catch {
-    return c.html(DEMO_HTML);
+// Demo index page — served directly from compilation bundle, falls back to inline HTML
+app.get('/', (c) => {
+  if (INDEX_HTML) {
+    return c.html(INDEX_HTML);
   }
+  return c.html(DEMO_HTML);
 });
 
 // Inline fallback demo page (used only when demo/index.html is absent)
@@ -104,7 +95,7 @@ const DEMO_HTML = `<!DOCTYPE html>
 <nav><span class="logo">Pluggable Bot</span></nav>
 <div class="hero">
   <h1>Pluggable Bot</h1>
-  <p>AI chat widget for any website. Visit <a style="color:#fff;text-decoration:underline" href="/mht">/mht</a> for the MHT demo.</p>
+  <p>AI chat widget for any website. Visit <a style="color:#fff;text-decoration:underline; " href="/mht">/mht</a> for the MHT demo.</p>
 </div>
 <footer>&copy; 2025 Pluggable Bot</footer>
 <script src="/widget/pluggable-bot.js" data-api-url="" data-bot-name="Assistant" data-primary-color="#4f46e5"></script>
