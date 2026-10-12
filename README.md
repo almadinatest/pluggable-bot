@@ -41,10 +41,19 @@ Add a single `<script>` tag before `</body>` — no API URL is hard-coded. If th
   data-api-url=""
   data-bot-name="My Bot"
   data-primary-color="#4f46e5"
+  data-lang="ar"
 ></script>
 ```
 
 If your API lives on another origin, point `data-api-url` at it directly (or set the `PUBLIC_API_URL` env var — the server substitutes `__API_URL__` placeholders in the demo pages it serves).
+
+### Language (English / Arabic)
+
+The widget ships with English and Arabic UI strings, full RTL layout, and a language-toggle button in its header. The bot also replies in the user's language (Arabic questions get Arabic answers).
+
+- Omit `data-lang` to auto-detect from the host page (`<html lang>` / `dir="rtl"`) or the browser's preferred language.
+- Set `data-lang="ar"` (or `"en"`) to force the initial language. Users can still toggle via the header button.
+- `data-position` supports `bottom-right` (default), `bottom-left`, `top-right`, `top-left`.
 
 ---
 
@@ -86,6 +95,8 @@ Widget defaults are baked from build-time env (see `WIDGET_*` below) and can be 
 | `data-api-url`       | same-origin (`""`)     | Base URL of your pluggable-bot server              |
 | `data-bot-name`      | `Bot` (or `WIDGET_BOT_NAME`) | Display name shown in the chat header         |
 | `data-primary-color` | `#1a1a2e` (or `WIDGET_PRIMARY_COLOR`) | Accent color for launcher/send button |
+| `data-lang`          | auto (`en`)            | UI language: `en` or `ar` (RTL + toggle)           |
+| `data-position`      | `bottom-right` (or `WIDGET_POSITION`) | `bottom-right`, `bottom-left`, `top-right`, `top-left` |
 
 Server configuration — everything is read from the environment (`.env.local` for local dev via `dotenv`, Vercel project env vars / Wrangler secrets for production). See `.env.example` for the full annotated list:
 

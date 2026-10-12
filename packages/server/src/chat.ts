@@ -39,7 +39,7 @@ export function chatRoute(app: Hono): void {
       return c.json({ error: 'invalid JSON body' }, 400);
     }
 
-    const { message, pageContext, history } = body;
+    const { message, pageContext, history, lang } = body;
     if (!message?.trim()) return c.json({ error: 'message required' }, 400);
 
     // ── RAG: retrieve relevant knowledge chunks ───────────────────────────────
@@ -49,10 +49,20 @@ export function chatRoute(app: Hono): void {
         ? contextChunks.map((ch) => ch.content).join('\n---\n')
         : '(No knowledge base content yet — use the Train Bot button to add content.)';
 
+    // Reply in the user's language. `lang` is the widget UI language; the
+    // written message itself takes priority so a switch is respected.
+    const languageRule =
+      lang === 'ar'
+        ? 'Always reply in Arabic (العربية), regardless of the language of the knowledge base.'
+        : lang === 'en'
+          ? 'Always reply in English, regardless of the language of the knowledge base.'
+          : "Always reply in the same language the user wrote in (Arabic or English).";
+
     const systemPrompt =
       `You are a helpful assistant for the website: ${pageContext.url || '(unknown)'}.\n` +
       `Answer questions using the knowledge base below. Be concise and accurate.\n` +
-      `If the answer isn't in the knowledge base, say so clearly.\n\n` +
+      `If the answer isn't in the knowledge base, say so clearly.\n` +
+      `${languageRule}\n\n` +
       `Knowledge base:\n${knowledgeText}`;
 
     const safeHistory: Message[] = Array.isArray(history) ? history.slice(-env.maxHistory) : [];

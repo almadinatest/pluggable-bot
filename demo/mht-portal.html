@@ -291,7 +291,7 @@
 <span id="train-status"></span>
 
 <!-- Manual train button (top-right) -->
-<button class="train-btn" onclick="trainBot()">🤖 Train Bot on This Page</button>
+<button class="train-btn" onclick="trainBot()">🤖 Train Bot · درّب البوت</button>
 
 <!-- Top utility bar -->
 <div class="topbar">
@@ -608,17 +608,17 @@
     })
       .then(function(r) { return r.json(); })
       .then(function(d) {
-        alert('Bot trained! Added ' + d.chunksAdded + ' chunks. Total: ' + d.total + '.');
+        alert('Bot trained! Added ' + d.chunksAdded + ' chunks. Total: ' + d.total + '. | تم تدريب البوت! تمت إضافة ' + d.chunksAdded + ' مقطع. الإجمالي: ' + d.total + '.');
       })
       .catch(function(err) {
-        alert('Training failed: ' + err.message);
+        alert('Training failed: ' + err.message + ' | فشل التدريب: ' + err.message);
       });
   }
 
   /* Auto-train on page load — non-blocking, shows status badge */
   document.addEventListener('DOMContentLoaded', function() {
     var badge = document.getElementById('train-status');
-    badge.textContent = 'Training…';
+    badge.textContent = 'Training… · جارٍ التدريب…';
     badge.classList.add('visible');
     badge.style.background = '#888';
 
@@ -633,12 +633,12 @@
     })
       .then(function(r) { return r.json(); })
       .then(function() {
-        badge.textContent = 'Bot trained ✓';
+        badge.textContent = 'Bot trained ✓ · تم التدريب ✓';
         badge.style.background = '#006341';
         setTimeout(function() { badge.classList.remove('visible'); }, 4000);
       })
       .catch(function() {
-        badge.textContent = 'Training skipped';
+        badge.textContent = 'Training skipped · تم تخطي التدريب';
         badge.style.background = '#888';
         setTimeout(function() { badge.classList.remove('visible'); }, 3000);
       });

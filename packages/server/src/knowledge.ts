@@ -62,9 +62,9 @@ export function getChunkCount(): number {
   return chunks.length;
 }
 
-/** Tokenize a string into lowercase words. */
+/** Tokenize a string into lowercase Unicode words (Latin, Arabic, digits, …). */
 function tokenize(text: string): string[] {
-  return text.toLowerCase().split(/\W+/).filter(Boolean);
+  return text.toLowerCase().match(/[\p{L}\p{N}]+/gu) ?? [];
 }
 
 /**
@@ -110,103 +110,105 @@ export function search(query: string, topK = 5): KnowledgeChunk[] {
 }
 
 /**
- * Pre-seed the knowledge base with MHT ePortal content.
- * No-op if chunks have already been loaded (from disk or a previous call).
+ * Pre-seed the knowledge base with MHT ePortal content (bilingual EN/AR).
+ * Each chunk carries both English and Arabic text so retrieval works for
+ * questions in either language. No-op if chunks have already been loaded.
  */
 export function seedMhtKnowledge(): void {
   if (getChunkCount() > 0) return; // don't double-seed
-  addChunks([
-    {
-      id: 'mht-001',
-      title: 'Tourist Guide Licensing Services',
-      url: 'https://stg-eportal.mht.gov.om/',
-      content: 'The Tourist Guide Licensing service allows individuals to apply for and renew official tourist guide licenses in Oman. Applicants must submit a valid Omani ID or residency card, pass a certified guide training course, and pay the licensing fee. Renewals are due every two years. Applications are submitted online through the MHT ePortal.',
-    },
-    {
-      id: 'mht-002',
-      title: 'Adventure Tourism',
-      url: 'https://stg-eportal.mht.gov.om/',
-      content: 'Adventure Tourism services cover permits and regulations for activities such as hiking, mountain climbing, desert safaris, diving, and off-road tours in Oman. Operators must register their business, submit safety plans, and renew activity permits annually. Individual adventurers can also apply for activity access passes.',
-    },
-    {
-      id: 'mht-003',
-      title: 'Cave Entry Permits',
-      url: 'https://stg-eportal.mht.gov.om/',
-      content: 'Cave Entry permits are required for visiting protected cave sites in Oman, including Al Hoota Cave and other heritage caves. Visitors apply online, choose a visit date and time slot, and receive a QR-code entry ticket. Group bookings require advance notice of 3 business days.',
-    },
-    {
-      id: 'mht-004',
-      title: 'Tourism Land Investment Services',
-      url: 'https://stg-eportal.mht.gov.om/',
-      content: 'Tourism Land Investment services facilitate the licensing of tourism development projects on designated land parcels in Oman. Investors submit a project proposal, environmental impact assessment, and proof of financial capacity. Approval timelines are typically 30–60 business days depending on project complexity.',
-    },
-    {
-      id: 'mht-005',
-      title: 'Hotel Licensing Services',
-      url: 'https://stg-eportal.mht.gov.om/',
-      content: 'Hotel Licensing covers the registration, classification, and annual renewal of hotels, hotel apartments, and tourist resorts in Oman. New licenses require a building completion certificate, fire safety clearance, and health inspection report. Star ratings are assigned by the MHT classification committee.',
-    },
-    {
-      id: 'mht-006',
-      title: 'Fine Arts Band',
-      url: 'https://stg-eportal.mht.gov.om/',
-      content: 'The Fine Arts Band service manages permits for artistic performances, exhibitions, and cultural events in Oman. Performers and organizers must apply at least 14 days before the event, provide a content description, and obtain approval from the Ministry. International artists require additional clearance.',
-    },
-    {
-      id: 'mht-007',
-      title: 'Tourism Establishment Classification Certificate',
-      url: 'https://stg-eportal.mht.gov.om/',
-      content: 'Tourism establishments including restaurants, cafes, travel agencies, and tour operators must hold a valid Classification Certificate from the MHT. Classification is based on facility quality, staff qualifications, and service standards. Certificates are renewed every three years after an on-site inspection.',
-    },
-    {
-      id: 'mht-008',
-      title: 'Quality Monitoring',
-      url: 'https://stg-eportal.mht.gov.om/',
-      content: 'The Quality Monitoring service enables tourism businesses and the public to submit feedback, complaints, and quality reports about tourism establishments in Oman. Reports are reviewed by MHT inspectors within 5 business days. Businesses found in violation may be fined or have their license suspended.',
-    },
-    {
-      id: 'mht-009',
-      title: 'Media and Content',
-      url: 'https://stg-eportal.mht.gov.om/',
-      content: 'Media and Content services cover permits for filming, photography, and content creation at heritage sites and tourism areas in Oman. Commercial productions require a filming permit, location fee, and MHT-assigned liaison officer. Personal photography for non-commercial purposes is generally free but subject to site rules.',
-    },
-    {
-      id: 'mht-010',
-      title: 'Tourism Center',
-      url: 'https://stg-eportal.mht.gov.om/',
-      content: 'Tourism Centers are licensed visitor information and tourism service hubs. Operators apply for a Tourism Center license, must maintain bilingual (Arabic and English) staff, and provide approved tourism materials. Annual renewal requires a compliance audit.',
-    },
-    {
-      id: 'mht-011',
-      title: 'Museum and Heritage House Services',
-      url: 'https://stg-eportal.mht.gov.om/',
-      content: 'Museum and Heritage House services cover licensing, registration, and support for public and private museums, heritage houses, and archaeological exhibition spaces in Oman. New museum licenses require an artifact inventory, curator qualifications, and facility safety inspection. The MHT provides advisory support for heritage conservation.',
-    },
-    {
-      id: 'mht-012',
-      title: 'Event and Filming',
-      url: 'https://stg-eportal.mht.gov.om/',
-      content: 'Event and Filming permits are required for organizing public tourism events, festivals, and professional filming activities in Oman. Event organizers submit a detailed event plan, safety assessment, and crowd management procedures. Filming crews must have liability insurance and MHT approval before commencing.',
-    },
-    {
-      id: 'mht-faq-001',
-      title: 'How to apply for eServices on the MHT portal',
-      url: 'https://stg-eportal.mht.gov.om/',
-      content: 'To use MHT eServices, create an account on the ePortal using your Omani civil ID or Resident ID. After login, select the desired service, fill in the application form, upload required documents (PDF or JPG), and pay any applicable fees online. You will receive SMS and email notifications on your application status.',
-    },
-    {
-      id: 'mht-faq-002',
-      title: 'MHT portal language support',
-      url: 'https://stg-eportal.mht.gov.om/',
-      content: 'The MHT ePortal supports both Arabic and English. Users can switch between languages using the language toggle in the navigation bar. All official documents and certificates are issued in Arabic; English translations may be requested for an additional fee.',
-    },
-    {
-      id: 'mht-faq-003',
-      title: 'Contact Ministry of Heritage and Tourism Oman',
-      url: 'https://stg-eportal.mht.gov.om/',
-      content: 'Ministry of Heritage and Tourism, Sultanate of Oman. Address: P.O. Box 550, Muscat, Oman. Phone: +968 2468 4000. Email: info@mht.gov.om. Working hours: Sunday to Thursday, 7:30 AM to 2:30 PM. The ePortal technical support hotline is available 8 AM to 8 PM.',
-    },
-  ]);
+  const url = 'https://stg-eportal.mht.gov.om/';
+  const en = (title: string, body: string, ar: string): KnowledgeChunk => ({
+    id: '',
+    title,
+    content: `${body}\n\n[ar] ${ar}`,
+    url,
+  });
+  const seed: KnowledgeChunk[] = [
+    en(
+      'Tourist Guide Licensing Services | خدمات ترخيص المرشد السياحي',
+      'The Tourist Guide Licensing service allows individuals to apply for and renew official tourist guide licenses in Oman. Applicants must submit a valid Omani ID or residency card, pass a certified guide training course, and pay the licensing fee. Renewals are due every two years. Applications are submitted online through the MHT ePortal.',
+      'خدمة ترخيص المرشد السياحي تتيح للأفراد التقدّم بطلب إصدار وتجديد رخصة المرشد السياحي في سلطنة عُمان. يجب تقديم البطاقة الشخصية العُمانية أو بطاقة الإقامة سارية المفعول، واجتياز دورة تدريب المرشدين المعتمدة، وسداد رسوم الترخيص. يتم التجديد كل سنتين، وتُقدَّم الطلبات إلكترونياً عبر بوابة وزارة التراث والسياحة.'
+    ),
+    en(
+      'Adventure Tourism | السياحة المغامرة',
+      'Adventure Tourism services cover permits and regulations for activities such as hiking, mountain climbing, desert safaris, diving, and off-road tours in Oman. Operators must register their business, submit safety plans, and renew activity permits annually. Individual adventurers can also apply for activity access passes.',
+      'تشمل خدمات السياحة المغامرة التصاريح واللوائح لأنشطة المشي الجبلي والتسلق والسفاري الصحراوي والغوص والرحلات البرية في عُمان. يجب على المشغلين تسجيل النشاط وتقديم خطط السلامة وتجديد تصاريح الأنشطة سنوياً، كما يمكن للأفراد التقدّم بطلب تصاريح المشاركة.'
+    ),
+    en(
+      'Cave Entry Permits | تصاريح دخول الكهوف',
+      'Cave Entry permits are required for visiting protected cave sites in Oman, including Al Hoota Cave and other heritage caves. Visitors apply online, choose a visit date and time slot, and receive a QR-code entry ticket. Group bookings require advance notice of 3 business days.',
+      'يلزم الحصول على تصريح دخول الكهوف لزيارة مواقع الكهوف المحمية في عُمان مثل كهف الهوته وغيره من الكهوف التراثية. يتقدّم الزائر إلكترونياً ويختار تاريخ الزيارة والفترة الزمنية ويستلم تذكرة دخول برمز QR. تتطلب الحجوزات الجماعية إشعاراً مسبقاً بثلاثة أيام عمل.'
+    ),
+    en(
+      'Tourism Land Investment Services | خدمات الاستثمار في الأراضي السياحية',
+      'Tourism Land Investment services facilitate the licensing of tourism development projects on designated land parcels in Oman. Investors submit a project proposal, environmental impact assessment, and proof of financial capacity. Approval timelines are typically 30–60 business days depending on project complexity.',
+      'تسهّل خدمات الاستثمار في الأراضي السياحية ترخيص المشاريع السياحية على قطع الأراضي المخصصة في عُمان. يقدّم المستثمر مقترح المشروع ودراسة الأثر البيئي وإثبات القدرة المالية. تستغرق الموافقات عادة من 30 إلى 60 يوم عمل حسب حجم المشروع.'
+    ),
+    en(
+      'Hotel Licensing Services | خدمات ترخيص الفنادق',
+      'Hotel Licensing covers the registration, classification, and annual renewal of hotels, hotel apartments, and tourist resorts in Oman. New licenses require a building completion certificate, fire safety clearance, and health inspection report. Star ratings are assigned by the MHT classification committee.',
+      'تشمل خدمة ترخيص الفنادق تسجيل وتصنيف وتجديد تراخيص الفنادق والشقق الفندقية والمنتجعات السياحية في عُمان سنوياً. يتطلب الترخيص الجديد شهادة إنجاز البناء وموافقة السلامة من الحريق وتقرير الفحص الصحي. تُمنح تصنيفات النجوم من لجنة التصنيف بالوزارة.'
+    ),
+    en(
+      'Fine Arts Band | الفرقة الفنية',
+      'The Fine Arts Band service manages permits for artistic performances, exhibitions, and cultural events in Oman. Performers and organizers must apply at least 14 days before the event, provide a content description, and obtain approval from the Ministry. International artists require additional clearance.',
+      'تدير خدمة الفرقة الفنية تصاريح العروض الفنية والمعارض والفعاليات الثقافية في عُمان. يجب على الفنانين والمنظمين التقدّم قبل 14 يوماً على الأقل من الفعالية وتقديم وصف المحتوى والحصول على موافقة الوزارة، كما يحتاج الفنانون الدوليون إلى تصريح إضافي.'
+    ),
+    en(
+      'Tourism Establishment Classification Certificate | شهادة تصنيف المنشآت السياحية',
+      'Tourism establishments including restaurants, cafes, travel agencies, and tour operators must hold a valid Classification Certificate from the MHT. Classification is based on facility quality, staff qualifications, and service standards. Certificates are renewed every three years after an on-site inspection.',
+      'يجب أن تحمل المنشآت السياحية مثل المطاعم والمقاهي ووكالات السفر ومنظمي الرحلات شهادة تصنيف سارية من الوزارة. يعتمد التصنيف على جودة المرافق ومؤهلات العاملين ومعايير الخدمة، ويُجدّد كل ثلاث سنوات بعد تفتيش ميداني.'
+    ),
+    en(
+      'Quality Monitoring | مراقبة الجودة',
+      'The Quality Monitoring service enables tourism businesses and the public to submit feedback, complaints, and quality reports about tourism establishments in Oman. Reports are reviewed by MHT inspectors within 5 business days. Businesses found in violation may be fined or have their license suspended.',
+      'تتيح خدمة مراقبة الجودة للمنشآت السياحية والجمهور تقديم الملاحظات والشكاوى وتقارير الجودة حول المنشآت السياحية في عُمان. يراجع مفتشو الوزارة التقارير خلال خمسة أيام عمل، وقد تُفرض غرامات أو يُعلَّق الترخيص على المنشآت المخالفة.'
+    ),
+    en(
+      'Media and Content | الإعلام والمحتوى',
+      'Media and Content services cover permits for filming, photography, and content creation at heritage sites and tourism areas in Oman. Commercial productions require a filming permit, location fee, and MHT-assigned liaison officer. Personal photography for non-commercial purposes is generally free but subject to site rules.',
+      'تشمل خدمات الإعلام والمحتوى تصاريح التصوير الفوتوغرافي وإنتاج المحتوى في المواقع التراثية والمناطق السياحية في عُمان. تتطلب الإنتاجات التجارية تصريح تصوير ورسوم موقع ومنسّقاً من الوزارة، أما التصوير الشخصي غير التجاري فمجاني عادة مع الالتزام بأنظمة الموقع.'
+    ),
+    en(
+      'Tourism Center | مركز السياحة',
+      'Tourism Centers are licensed visitor information and tourism service hubs. Operators apply for a Tourism Center license, must maintain bilingual (Arabic and English) staff, and provide approved tourism materials. Annual renewal requires a compliance audit.',
+      'تُرخَّص مراكز السياحة كمراكز معلومات وخدمات سياحية. يتقدّم المشغل بطلب ترخيص مركز سياحة، ويلتزم بتوفير موظفين يتحدثون العربية والإنجليزية وتقديم مواد سياحية معتمدة، مع تجديد سنوي يتطلب تدقيق الالتزام.'
+    ),
+    en(
+      'Museum and Heritage House Services | خدمات المتاحف والبيوت التراثية',
+      'Museum and Heritage House services cover licensing, registration, and support for public and private museums, heritage houses, and archaeological exhibition spaces in Oman. New museum licenses require an artifact inventory, curator qualifications, and facility safety inspection. The MHT provides advisory support for heritage conservation.',
+      'تشمل خدمات المتاحف والبيوت التراثية الترخيص والتسجيل ودعم المتاحف العامة والخاصة والبيوت التراثية ومساحات العرض الأثرية في عُمان. يتطلب ترخيص المتحف الجديد جرداً للمقتنيات ومؤهلات أمين المتحف وفحص سلامة المرفق، وتقدّم الوزارة الدعم الاستشاري لصون التراث.'
+    ),
+    en(
+      'Event and Filming | الفعاليات والتصوير',
+      'Event and Filming permits are required for organizing public tourism events, festivals, and professional filming activities in Oman. Event organizers submit a detailed event plan, safety assessment, and crowd management procedures. Filming crews must have liability insurance and MHT approval before commencing.',
+      'يلزم الحصول على تصاريح الفعاليات والتصوير لتنظيم الفعاليات والمهرجانات السياحية العامة وأنشطة التصوير المهني في عُمان. يقدّم المنظمون خطة فعالية مفصّلة وتقييماً للسلامة وإجراءات إدارة الحشود، ويجب أن يكون لدى فرق التصوير تأمين مسؤولية وموافقة الوزارة قبل البدء.'
+    ),
+    en(
+      'How to apply for eServices on the MHT portal | كيفية التقدّم للخدمات الإلكترونية',
+      'To use MHT eServices, create an account on the ePortal using your Omani civil ID or Resident ID. After login, select the desired service, fill in the application form, upload required documents (PDF or JPG), and pay any applicable fees online. You will receive SMS and email notifications on your application status.',
+      'لاستخدام الخدمات الإلكترونية للوزارة، أنشئ حساباً على البوابة الإلكترونية باستخدام البطاقة الشخصية العُمانية أو بطاقة المقيم. بعد تسجيل الدخول، اختر الخدمة المطلوبة واملأ النموذج وارفع المستندات المطلوبة (PDF أو JPG) وسدّد الرسوم إلكترونياً. ستصلك إشعارات عبر الرسائل النصية والبريد الإلكتروني بحالة الطلب.'
+    ),
+    en(
+      'MHT portal language support | دعم اللغات في البوابة',
+      'The MHT ePortal supports both Arabic and English. Users can switch between languages using the language toggle in the navigation bar. All official documents and certificates are issued in Arabic; English translations may be requested for an additional fee.',
+      'تدعم بوابة وزارة التراث والسياحة اللغتين العربية والإنجليزية، ويمكن للمستخدم التبديل بينهما عبر زر تغيير اللغة في شريط التنقل. تصدر جميع الوثائق والشهادات الرسمية باللغة العربية، ويمكن طلب ترجمتها إلى الإنجليزية مقابل رسوم إضافية.'
+    ),
+    en(
+      'Contact Ministry of Heritage and Tourism Oman | تواصل مع وزارة التراث والسياحة',
+      'Ministry of Heritage and Tourism, Sultanate of Oman. Address: P.O. Box 550, Muscat, Oman. Phone: +968 2468 4000. Email: info@mht.gov.om. Working hours: Sunday to Thursday, 7:30 AM to 2:30 PM. The ePortal technical support hotline is available 8 AM to 8 PM.',
+      'وزارة التراث والسياحة، سلطنة عُمان. العنوان: ص.ب 550، مسقط، عُمان. الهاتف: ‎+968 2468 4000. البريد الإلكتروني: info@mht.gov.om. ساعات العمل: الأحد إلى الخميس، من 7:30 صباحاً إلى 2:30 ظهراً. ويعمل خط دعم البوابة الإلكترونية من الساعة 8 صباحاً حتى 8 مساءً.'
+    ),
+  ].map((chunk, i) => {
+    const ids = [
+      'mht-001', 'mht-002', 'mht-003', 'mht-004', 'mht-005', 'mht-006',
+      'mht-007', 'mht-008', 'mht-009', 'mht-010', 'mht-011', 'mht-012',
+      'mht-faq-001', 'mht-faq-002', 'mht-faq-003',
+    ];
+    return { ...chunk, id: ids[i] ?? `mht-${String(i + 1).padStart(3, '0')}` };
+  });
+
+  addChunks(seed);
 }
 
 /**

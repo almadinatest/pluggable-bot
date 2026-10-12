@@ -21,6 +21,8 @@ export interface ChatRequest {
   message: string;
   pageContext: PageContext;
   history: Message[];
+  /** UI language of the widget ('en' | 'ar'); used to steer the reply language. */
+  lang?: string;
 }
 
 export interface TrainRequest {
