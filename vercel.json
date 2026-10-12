@@ -6,6 +6,8 @@
     { "source": "/api/(.*)", "destination": "/api/index" },
     { "source": "/widget/(.*)", "destination": "/api/index" },
     { "source": "/mht", "destination": "/api/index" },
+    { "source": "/plug", "destination": "/api/index" },
+    { "source": "/view", "destination": "/api/index" },
     { "source": "/", "destination": "/api/index" }
   ]
 }
