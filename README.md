@@ -70,8 +70,8 @@ https://your-server/view?url=https%3A%2F%2Fexample.com
 ```
 
 - Shows the site in an iframe with the chat widget overlaid, and automatically trains the bot on that link (fetched server-side, so cross-origin pages work).
-- **Reader** tab shows the extracted text for sites that block being framed (`X-Frame-Options` / CSP) — it uses `GET /api/reader?url=…`.
-- The top bar lets you re-paste a new link, switch Site/Reader, or open the original page in a new tab.
+- Three modes: **Site** (direct iframe), **Proxy** (server-side HTML proxy for sites that refuse to be framed — `X-Frame-Options` / CSP `frame-ancestors`), **Reader** (extracted text; no iframe at all). Pass `?mode=proxy` or `?mode=reader` to preselect one.
+- The top bar lets you re-paste a new link, switch modes, or open the original page in a new tab.
 
 ### Landing page — `/plug`
 
@@ -92,6 +92,8 @@ curl -X POST https://your-server/api/train \
 ```
 
 The fetch is guarded against SSRF: only `http(s)` targets are allowed, and localhost / private / link-local addresses are rejected.
+
+The proxy endpoint (`/view` → **Proxy** tab, or `GET /proxy?url=…`) does the same guard, then rewrites the page: it injects a `<base>` so its CSS/JS/images load from the real site, routes same-site links through `/proxy`, and serves it from our origin — so the target's framing policy never applies. Interactive features that need cookies or websockets (e.g. logins) may not work through the proxy.
 
 ---
 
@@ -170,7 +172,7 @@ Browser
 ```
 
 - **Widget** (`packages/widget/`) — Vanilla TypeScript Custom Element compiled to a single IIFE JS file by esbuild. Zero dependencies at runtime.
-- **Server** (`packages/server/`) — [Hono](https://hono.dev/) app running on Cloudflare Workers. Routes: `GET /`, `GET /plug`, `GET /view`, `GET /api/health`, `GET /api/reader`, `GET /widget/pluggable-bot.js`, `POST /api/train`, `POST /api/chat`.
+- **Server** (`packages/server/`) — [Hono](https://hono.dev/) app running on Cloudflare Workers. Routes: `GET /`, `GET /plug`, `GET /view`, `GET /api/health`, `GET /api/reader`, `GET/POST /proxy`, `GET /widget/pluggable-bot.js`, `POST /api/train`, `POST /api/chat`.
 - **Knowledge store** — In-memory array of text chunks. Persisted to `packages/server/data/knowledge.json` under `wrangler dev` (Node.js compat). In production Workers, the store resets each cold start (suitable for demos; production workloads should use Cloudflare D1 or KV).
 - **Streaming** — Server returns `text/event-stream` using the Workers `ReadableStream` API. Widget reads chunks via `fetch` + `TextDecoderStream` reader.
 
@@ -213,6 +215,7 @@ pluggable-bot/
 │       │   ├── types.ts    # Shared TypeScript interfaces
 │       │   ├── knowledge.ts # TF-IDF search + chunk store
 │       │   ├── extract.ts  # Server-side URL fetch + HTML→text (SSRF-guarded)
+│       │   ├── proxy.ts    # HTML proxy rewrite for sites that block framing
 │       │   ├── train.ts    # POST /api/train handler (content or URL)
 │       │   ├── chat.ts     # POST /api/chat handler (SSE)
 │       │   └── index.ts    # Hono app entrypoint

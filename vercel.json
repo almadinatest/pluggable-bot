@@ -8,6 +8,7 @@
     { "source": "/mht", "destination": "/api/index" },
     { "source": "/plug", "destination": "/api/index" },
     { "source": "/view", "destination": "/api/index" },
+    { "source": "/proxy", "destination": "/api/index" },
     { "source": "/", "destination": "/api/index" }
   ]
 }

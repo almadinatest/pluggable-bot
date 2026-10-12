@@ -6,6 +6,7 @@ import { getChunkCount, seedMhtKnowledge } from './knowledge.js';
 import { env } from './env.js';
 import { WIDGET_JS, MHT_HTML, INDEX_HTML, VIEW_HTML, PLUG_HTML } from './assets.generated.js';
 import { fetchUrlPage } from './extract.js';
+import { fetchRawPage, rewriteProxiedHtml } from './proxy.js';
 
 // Pre-seed MHT knowledge base at startup
 seedMhtKnowledge();
@@ -37,6 +38,37 @@ app.get('/api/reader', async (c) => {
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
     return c.json({ error: msg }, 400);
+  }
+});
+
+// HTML proxy: render sites that refuse to be framed (X-Frame-Options / CSP
+// frame-ancestors) inside our own origin. GET fetches and rewrites the page;
+// POST forwards a simple form submission to the target.
+app.all('/proxy', async (c) => {
+  const url = c.req.query('url') ?? '';
+  if (!url) return c.text('url required', 400);
+  try {
+    const init: RequestInit = {};
+    if (c.req.method === 'POST') {
+      init.method = 'POST';
+      init.body = await c.req.formData();
+    }
+    const page = await fetchRawPage(url, init);
+    const isHtml = /html/i.test(page.contentType);
+    const body = isHtml ? rewriteProxiedHtml(page.html, page.finalUrl) : page.html;
+    return new Response(body, {
+      status: page.status >= 400 ? page.status : 200,
+      headers: {
+        'Content-Type': isHtml ? 'text/html; charset=utf-8' : page.contentType,
+        'Cache-Control': 'no-store',
+      },
+    });
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    return new Response(`<h1>Proxy error</h1><p>${msg}</p>`, {
+      status: 400,
+      headers: { 'Content-Type': 'text/html; charset=utf-8' },
+    });
   }
 });
 

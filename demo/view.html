@@ -16,7 +16,7 @@
   .tab { padding:7px 12px; border:1px solid #334155; background:transparent; color:#cbd5e1; border-radius:8px; cursor:pointer; font-size:13px; flex-shrink:0; }
   .tab.active { background:var(--accent); border-color:var(--accent); color:#fff; }
   #open-ext { padding:7px 12px; border-radius:8px; background:#1e293b; color:#cbd5e1; text-decoration:none; font-size:13px; border:1px solid #334155; flex-shrink:0; }
-  #status { font-size:12px; color:var(--muted); max-width:300px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  #status { font-size:12px; color:var(--muted); max-width:280px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
   #status.ok { color:var(--ok); } #status.err { color:var(--err); } #status.busy { color:#fbbf24; }
   main { position:absolute; top:56px; left:0; right:0; bottom:0; }
   #frame { width:100%; height:100%; border:0; background:#fff; }
@@ -25,7 +25,8 @@
   .reader-url { max-width:820px; margin:0 auto 20px; color:var(--muted); font-size:13px; word-break:break-all; }
   .reader-text { max-width:820px; margin:0 auto; white-space:pre-wrap; line-height:1.7; color:#1f2937; }
   .hint { max-width:820px; margin:0 auto 16px; padding:10px 14px; background:#fff7ed; border:1px solid #fed7aa; color:#9a3412; border-radius:8px; font-size:13px; }
-  @media (max-width:720px){ #status{display:none} }
+  #site-hint { position:absolute; top:8px; left:50%; transform:translateX(-50%); z-index:5; padding:6px 12px; background:rgba(255,247,237,.95); border:1px solid #fed7aa; color:#9a3412; border-radius:999px; font-size:12px; box-shadow:0 1px 3px rgba(0,0,0,.15); pointer-events:none; white-space:nowrap; }
+  @media (max-width:760px){ #status{display:none} #site-hint{display:none} }
 </style>
 </head>
 <body>
@@ -36,12 +37,14 @@
     <button type="submit">Load</button>
   </form>
   <button id="mode-site" class="tab active" type="button">Site</button>
+  <button id="mode-proxy" class="tab" type="button">Proxy</button>
   <button id="mode-reader" class="tab" type="button">Reader</button>
   <a id="open-ext" href="#" target="_blank" rel="noopener noreferrer">Open ↗</a>
   <span id="status"></span>
 </header>
 
 <main>
+  <div id="site-hint">Some sites block direct embedding (CSP) — if blank, use <b>Proxy</b> or <b>Reader</b></div>
   <iframe id="frame" title="Site preview" referrerpolicy="no-referrer"></iframe>
   <article id="reader" hidden></article>
 </main>
@@ -65,19 +68,34 @@
   var statusEl = document.getElementById('status');
   var openExt = document.getElementById('open-ext');
   var btnSite = document.getElementById('mode-site');
+  var btnProxy = document.getElementById('mode-proxy');
   var btnReader = document.getElementById('mode-reader');
   var current = '';
+  var activeMode = 'site';
 
   function setStatus(text, kind) { statusEl.textContent = text || ''; statusEl.className = kind || ''; }
   function isHttp(u) { try { var p = new URL(u); return p.protocol === 'http:' || p.protocol === 'https:'; } catch (e) { return false; } }
 
+  function setTabs(mode) {
+    activeMode = mode;
+    btnSite.classList.toggle('active', mode === 'site');
+    btnProxy.classList.toggle('active', mode === 'proxy');
+    btnReader.classList.toggle('active', mode === 'reader');
+  }
+
   function showSite() {
-    frame.hidden = false; readerEl.hidden = true;
-    btnSite.classList.add('active'); btnReader.classList.remove('active');
+    readerEl.hidden = true; frame.hidden = false;
+    setTabs('site');
+    if (current) frame.src = current;
+  }
+  function showProxy() {
+    readerEl.hidden = true; frame.hidden = false;
+    setTabs('proxy');
+    if (current) frame.src = API + '/proxy?url=' + encodeURIComponent(current);
   }
   function showReader() {
     frame.hidden = true; readerEl.hidden = false;
-    btnReader.classList.add('active'); btnSite.classList.remove('active');
+    setTabs('reader');
     loadReader(current);
   }
 
@@ -86,7 +104,7 @@
     readerEl.innerHTML = '';
     var hint = document.createElement('div');
     hint.className = 'hint';
-    hint.textContent = 'Reader view — text extracted from the link (used when a site cannot be embedded in a frame).';
+    hint.textContent = 'Reader view — text extracted from the link (used when a site cannot be embedded or proxied).';
     readerEl.appendChild(hint);
     var loading = document.createElement('div'); loading.className = 'reader-text'; loading.textContent = 'Loading…';
     readerEl.appendChild(loading);
@@ -144,11 +162,18 @@
 
   form.addEventListener('submit', function (e) { e.preventDefault(); apply(input.value.trim()); });
   btnSite.addEventListener('click', showSite);
+  btnProxy.addEventListener('click', showProxy);
   btnReader.addEventListener('click', showReader);
 
   var initial = params.get('url') || '';
-  if (initial) apply(initial);
-  else setStatus('Paste a link above to load it with the bot plugged in.');
+  var mode = params.get('mode') || 'site';
+  if (initial) {
+    apply(initial);
+    if (mode === 'proxy') showProxy();
+    else if (mode === 'reader') showReader();
+  } else {
+    setStatus('Paste a link above to load it with the bot plugged in.');
+  }
 })();
 </script>
 </body>
