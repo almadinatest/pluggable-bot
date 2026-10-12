@@ -67,8 +67,13 @@ export function chatRoute(app: Hono): void {
     ];
 
     // ── Resolve API key: prefer OPENROUTER_API_KEY, fall back to OPENAI_API_KEY
-    // (OpenRouter accepts the same key format for both fields.)
-    const apiKey = getLlmApiKey();
+    // On Cloudflare Workers, bindings (vars + secrets) arrive on the request
+    // `env` (c.env); on Node/Vercel they live on `process.env`. Support both.
+    const runtimeEnv = (c.env ?? {}) as Record<string, unknown>;
+    const apiKey =
+      (typeof runtimeEnv.OPENROUTER_API_KEY === 'string' && runtimeEnv.OPENROUTER_API_KEY) ||
+      (typeof runtimeEnv.OPENAI_API_KEY === 'string' && runtimeEnv.OPENAI_API_KEY) ||
+      getLlmApiKey();
 
     // ── LLM: real streaming via OpenRouter ────────────────────────────────────
     if (apiKey) {
