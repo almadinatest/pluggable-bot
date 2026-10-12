@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Bot Viewer — any web link</title>
+<style>
+  :root { --bar:#111827; --accent:#4f46e5; --ok:#10b981; --err:#ef4444; --muted:#94a3b8; }
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin:0; height:100%; font-family: system-ui, -apple-system, 'Segoe UI', Tahoma, Arial, sans-serif; background:#fff; }
+  #bar { position:fixed; inset:0 0 auto 0; height:56px; display:flex; align-items:center; gap:10px; padding:0 12px; background:var(--bar); color:#fff; z-index:10000; }
+  #home { color:#fff; text-decoration:none; font-size:20px; flex-shrink:0; }
+  #url-form { display:flex; flex:1; gap:8px; min-width:0; }
+  #url-input { flex:1; min-width:0; padding:8px 12px; border-radius:8px; border:1px solid #334155; background:#1e293b; color:#e2e8f0; font-size:14px; }
+  #url-form button { padding:8px 14px; border:none; border-radius:8px; background:var(--accent); color:#fff; font-weight:600; cursor:pointer; flex-shrink:0; }
+  .tab { padding:7px 12px; border:1px solid #334155; background:transparent; color:#cbd5e1; border-radius:8px; cursor:pointer; font-size:13px; flex-shrink:0; }
+  .tab.active { background:var(--accent); border-color:var(--accent); color:#fff; }
+  #open-ext { padding:7px 12px; border-radius:8px; background:#1e293b; color:#cbd5e1; text-decoration:none; font-size:13px; border:1px solid #334155; flex-shrink:0; }
+  #status { font-size:12px; color:var(--muted); max-width:300px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  #status.ok { color:var(--ok); } #status.err { color:var(--err); } #status.busy { color:#fbbf24; }
+  main { position:absolute; top:56px; left:0; right:0; bottom:0; }
+  #frame { width:100%; height:100%; border:0; background:#fff; }
+  #reader { position:absolute; inset:0; overflow:auto; padding:32px 20px 130px; background:#fff; }
+  #reader h1 { font-size:1.4rem; margin:0 auto 10px; max-width:820px; }
+  .reader-url { max-width:820px; margin:0 auto 20px; color:var(--muted); font-size:13px; word-break:break-all; }
+  .reader-text { max-width:820px; margin:0 auto; white-space:pre-wrap; line-height:1.7; color:#1f2937; }
+  .hint { max-width:820px; margin:0 auto 16px; padding:10px 14px; background:#fff7ed; border:1px solid #fed7aa; color:#9a3412; border-radius:8px; font-size:13px; }
+  @media (max-width:720px){ #status{display:none} }
+</style>
+</head>
+<body>
+<header id="bar">
+  <a id="home" href="/plug" title="Plug Bot">🤖</a>
+  <form id="url-form">
+    <input id="url-input" type="url" inputmode="url" placeholder="Paste any link, e.g. https://example.com" autocomplete="off" spellcheck="false" />
+    <button type="submit">Load</button>
+  </form>
+  <button id="mode-site" class="tab active" type="button">Site</button>
+  <button id="mode-reader" class="tab" type="button">Reader</button>
+  <a id="open-ext" href="#" target="_blank" rel="noopener noreferrer">Open ↗</a>
+  <span id="status"></span>
+</header>
+
+<main>
+  <iframe id="frame" title="Site preview" referrerpolicy="no-referrer"></iframe>
+  <article id="reader" hidden></article>
+</main>
+
+<!-- Pluggable Bot widget — __API_URL__ is replaced at serve time (PUBLIC_API_URL env) -->
+<script
+  src="__API_URL__/widget/pluggable-bot.js"
+  data-api-url="__API_URL__"
+  data-bot-name="Page Bot"
+  data-position="bottom-right"
+></script>
+
+<script>
+(function () {
+  var API = '__API_URL__';
+  var params = new URLSearchParams(location.search);
+  var input = document.getElementById('url-input');
+  var form = document.getElementById('url-form');
+  var frame = document.getElementById('frame');
+  var readerEl = document.getElementById('reader');
+  var statusEl = document.getElementById('status');
+  var openExt = document.getElementById('open-ext');
+  var btnSite = document.getElementById('mode-site');
+  var btnReader = document.getElementById('mode-reader');
+  var current = '';
+
+  function setStatus(text, kind) { statusEl.textContent = text || ''; statusEl.className = kind || ''; }
+  function isHttp(u) { try { var p = new URL(u); return p.protocol === 'http:' || p.protocol === 'https:'; } catch (e) { return false; } }
+
+  function showSite() {
+    frame.hidden = false; readerEl.hidden = true;
+    btnSite.classList.add('active'); btnReader.classList.remove('active');
+  }
+  function showReader() {
+    frame.hidden = true; readerEl.hidden = false;
+    btnReader.classList.add('active'); btnSite.classList.remove('active');
+    loadReader(current);
+  }
+
+  function loadReader(u) {
+    if (!u) return;
+    readerEl.innerHTML = '';
+    var hint = document.createElement('div');
+    hint.className = 'hint';
+    hint.textContent = 'Reader view — text extracted from the link (used when a site cannot be embedded in a frame).';
+    readerEl.appendChild(hint);
+    var loading = document.createElement('div'); loading.className = 'reader-text'; loading.textContent = 'Loading…';
+    readerEl.appendChild(loading);
+
+    fetch(API + '/api/reader?url=' + encodeURIComponent(u))
+      .then(function (r) { return r.json(); })
+      .then(function (d) {
+        readerEl.innerHTML = '';
+        readerEl.appendChild(hint);
+        if (d.error) {
+          var e = document.createElement('div'); e.className = 'reader-text';
+          e.textContent = 'Could not read this link: ' + d.error;
+          readerEl.appendChild(e);
+          return;
+        }
+        var h = document.createElement('h1'); h.textContent = d.title || u; readerEl.appendChild(h);
+        var uu = document.createElement('div'); uu.className = 'reader-url'; uu.textContent = d.url || u; readerEl.appendChild(uu);
+        var t = document.createElement('div'); t.className = 'reader-text'; t.textContent = d.text || '(no readable text)'; readerEl.appendChild(t);
+      })
+      .catch(function (err) {
+        readerEl.innerHTML = '';
+        readerEl.appendChild(hint);
+        var e = document.createElement('div'); e.className = 'reader-text';
+        e.textContent = 'Could not read this link: ' + err.message;
+        readerEl.appendChild(e);
+      });
+  }
+
+  function train(u) {
+    setStatus('Training on this link…', 'busy');
+    fetch(API + '/api/train', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ url: u }),
+    })
+      .then(function (r) { return r.json(); })
+      .then(function (d) {
+        if (d.error) setStatus('Training failed: ' + d.error, 'err');
+        else setStatus('Trained on ' + d.chunksAdded + ' chunk(s) ✓ — ask the bot anything', 'ok');
+      })
+      .catch(function (e) { setStatus('Training failed: ' + e.message, 'err'); });
+  }
+
+  function apply(u) {
+    if (!isHttp(u)) { setStatus('Enter a valid http(s) URL', 'err'); return; }
+    current = u;
+    input.value = u;
+    try { history.replaceState(null, '', '?url=' + encodeURIComponent(u)); } catch (e) {}
+    openExt.href = u;
+    document.title = 'Bot Viewer — ' + u;
+    showSite();
+    frame.src = u;
+    train(u);
+  }
+
+  form.addEventListener('submit', function (e) { e.preventDefault(); apply(input.value.trim()); });
+  btnSite.addEventListener('click', showSite);
+  btnReader.addEventListener('click', showReader);
+
+  var initial = params.get('url') || '';
+  if (initial) apply(initial);
+  else setStatus('Paste a link above to load it with the bot plugged in.');
+})();
+</script>
+</body>
+</html>

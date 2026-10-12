@@ -4,7 +4,8 @@ import { chatRoute } from './chat.js';
 import { trainRoute } from './train.js';
 import { getChunkCount, seedMhtKnowledge } from './knowledge.js';
 import { env } from './env.js';
-import { WIDGET_JS, MHT_HTML, INDEX_HTML } from './assets.generated.js';
+import { WIDGET_JS, MHT_HTML, INDEX_HTML, VIEW_HTML, PLUG_HTML } from './assets.generated.js';
+import { fetchUrlPage } from './extract.js';
 
 // Pre-seed MHT knowledge base at startup
 seedMhtKnowledge();
@@ -26,6 +27,19 @@ app.get('/api/health', (c) => {
   return c.json({ status: 'ok', chunks: getChunkCount() });
 });
 
+// Reader view: fetch any URL server-side and return its extracted text.
+// Used by /view as a fallback for sites that block being framed.
+app.get('/api/reader', async (c) => {
+  const url = c.req.query('url') ?? '';
+  if (!url) return c.json({ error: 'url required' }, 400);
+  try {
+    return c.json(await fetchUrlPage(url));
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    return c.json({ error: msg }, 400);
+  }
+});
+
 // Serve the compiled widget JS (inlined at build time by scripts/generate-assets.mjs)
 app.get('/widget/pluggable-bot.js', (c) => {
   if (!WIDGET_JS) {
@@ -41,6 +55,18 @@ app.get('/widget/pluggable-bot.js', (c) => {
       'Access-Control-Allow-Origin': '*',
     },
   });
+});
+
+// Viewer — load any web link with the bot plugged in (/view?url=…)
+app.get('/view', (c) => {
+  if (!VIEW_HTML) return c.html('<h1>Viewer page not found</h1>', 404);
+  return c.html(renderPage(VIEW_HTML));
+});
+
+// Landing page — enter a URL, grab the bookmarklet or embed snippet
+app.get('/plug', (c) => {
+  if (!PLUG_HTML) return c.html('<h1>Plug page not found</h1>', 404);
+  return c.html(renderPage(PLUG_HTML));
 });
 
 // MHT ePortal demo page

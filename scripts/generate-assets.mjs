@@ -22,6 +22,8 @@ const assets = [
   { name: 'WIDGET_JS', file: 'packages/widget/dist/pluggable-bot.js', required: false },
   { name: 'MHT_HTML', file: 'demo/mht-portal.html', required: true },
   { name: 'INDEX_HTML', file: 'demo/index.html', required: true },
+  { name: 'VIEW_HTML', file: 'demo/view.html', required: true },
+  { name: 'PLUG_HTML', file: 'demo/plug.html', required: true },
 ];
 
 let out =

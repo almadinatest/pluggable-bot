@@ -57,6 +57,44 @@ The widget ships with English and Arabic UI strings, full RTL layout, and a lang
 
 ---
 
+## Plug the Bot onto Any Web Link
+
+Two built-in pages let you attach the bot to **any** URL — no code needed:
+
+### Viewer — `/view?url=…`
+
+Load any link with the bot attached and trained on it:
+
+```
+https://your-server/view?url=https%3A%2F%2Fexample.com
+```
+
+- Shows the site in an iframe with the chat widget overlaid, and automatically trains the bot on that link (fetched server-side, so cross-origin pages work).
+- **Reader** tab shows the extracted text for sites that block being framed (`X-Frame-Options` / CSP) — it uses `GET /api/reader?url=…`.
+- The top bar lets you re-paste a new link, switch Site/Reader, or open the original page in a new tab.
+
+### Landing page — `/plug`
+
+`/plug` is a small installer page that gives you three options:
+
+1. **Open a link in the viewer** — paste a URL, it jumps to `/view?url=…`.
+2. **Bookmarklet** — drag the "🤖 Plug Bot" button to your bookmarks bar, then click it on any site you're browsing. It injects the widget into that page and trains the bot on the page text — works even on sites that block embedding.
+3. **Embed snippet** — copy the ready-made `<script>` tag for any site you control.
+
+### Direct URL training
+
+`POST /api/train` now accepts a URL **without** `content` and fetches it server-side:
+
+```bash
+curl -X POST https://your-server/api/train \
+  -H 'Content-Type: application/json' \
+  -d '{ "url": "https://example.com" }'
+```
+
+The fetch is guarded against SSRF: only `http(s)` targets are allowed, and localhost / private / link-local addresses are rejected.
+
+---
+
 ## Training Your Bot
 
 The bot answers questions based on content you train it on. You can train it in two ways:
@@ -132,7 +170,7 @@ Browser
 ```
 
 - **Widget** (`packages/widget/`) — Vanilla TypeScript Custom Element compiled to a single IIFE JS file by esbuild. Zero dependencies at runtime.
-- **Server** (`packages/server/`) — [Hono](https://hono.dev/) app running on Cloudflare Workers. Routes: `GET /`, `GET /api/health`, `GET /widget/pluggable-bot.js`, `POST /api/train`, `POST /api/chat`.
+- **Server** (`packages/server/`) — [Hono](https://hono.dev/) app running on Cloudflare Workers. Routes: `GET /`, `GET /plug`, `GET /view`, `GET /api/health`, `GET /api/reader`, `GET /widget/pluggable-bot.js`, `POST /api/train`, `POST /api/chat`.
 - **Knowledge store** — In-memory array of text chunks. Persisted to `packages/server/data/knowledge.json` under `wrangler dev` (Node.js compat). In production Workers, the store resets each cold start (suitable for demos; production workloads should use Cloudflare D1 or KV).
 - **Streaming** — Server returns `text/event-stream` using the Workers `ReadableStream` API. Widget reads chunks via `fetch` + `TextDecoderStream` reader.
 
@@ -174,13 +212,17 @@ pluggable-bot/
 │       ├── src/
 │       │   ├── types.ts    # Shared TypeScript interfaces
 │       │   ├── knowledge.ts # TF-IDF search + chunk store
-│       │   ├── train.ts    # POST /api/train handler
+│       │   ├── extract.ts  # Server-side URL fetch + HTML→text (SSRF-guarded)
+│       │   ├── train.ts    # POST /api/train handler (content or URL)
 │       │   ├── chat.ts     # POST /api/chat handler (SSE)
 │       │   └── index.ts    # Hono app entrypoint
 │       ├── data/           # Runtime knowledge store (gitignored)
 │       └── wrangler.toml   # Cloudflare Workers config
 ├── demo/
-│   └── index.html          # Standalone demo page (Acme Analytics)
+│   ├── index.html          # Standalone demo page (Acme Analytics)
+│   ├── mht-portal.html     # MHT ePortal bilingual demo
+│   ├── plug.html           # /plug — viewer link, bookmarklet, embed snippet
+│   └── view.html           # /view — view any URL with the bot attached
 └── README.md
 ```
 
