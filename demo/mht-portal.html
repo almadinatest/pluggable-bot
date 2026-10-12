@@ -586,10 +586,10 @@
   </div>
 </footer>
 
-<!-- Pluggable Bot widget — MHT branded -->
+<!-- Pluggable Bot widget — __API_URL__ is replaced at serve time (PUBLIC_API_URL env) -->
 <script
-  src="http://localhost:8787/widget/pluggable-bot.js"
-  data-api-url="http://localhost:8787"
+  src="__API_URL__/widget/pluggable-bot.js"
+  data-api-url="__API_URL__"
   data-bot-name="MHT Assistant"
   data-primary-color="#006341"
 ></script>
@@ -597,7 +597,7 @@
 <script>
   /* Manual train trigger */
   function trainBot() {
-    fetch('http://localhost:8787/api/train', {
+    fetch('__API_URL__/api/train', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -622,7 +622,7 @@
     badge.classList.add('visible');
     badge.style.background = '#888';
 
-    fetch('http://localhost:8787/api/train', {
+    fetch('__API_URL__/api/train', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({

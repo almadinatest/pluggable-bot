@@ -4,8 +4,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "esbuild src/index.ts --bundle --format=iife --global-name=PluggableBotLoader --minify --outfile=dist/pluggable-bot.js --target=es2020",
-    "build:dev": "esbuild src/index.ts --bundle --format=iife --global-name=PluggableBotLoader --sourcemap --watch --outfile=dist/pluggable-bot.js --target=es2020",
+    "build": "node build.mjs",
+    "build:dev": "node build.mjs --watch",
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {

@@ -7,12 +7,16 @@ interface HistoryEntry {
   content: string;
 }
 
+// Build-time configuration (injected via esbuild `define` in build.mjs).
+// Per-embed `data-*` attributes on the loaded <script> take precedence.
+const MAX_HISTORY = Number(process.env.WIDGET_MAX_HISTORY ?? '10');
+
 export class PluggableBotWidget extends HTMLElement {
   private shadow: ShadowRoot;
-  private apiUrl = 'http://localhost:8787';
-  private botName = 'Bot';
-  private primaryColor = '#1a1a2e';
-  private position = 'bottom-right';
+  private apiUrl = process.env.WIDGET_API_URL ?? '';
+  private botName = process.env.WIDGET_BOT_NAME ?? 'Bot';
+  private primaryColor = process.env.WIDGET_PRIMARY_COLOR ?? '#1a1a2e';
+  private position = process.env.WIDGET_POSITION ?? 'bottom-right';
   private history: HistoryEntry[] = [];
   private isOpen = false;
   private isStreaming = false;
@@ -130,7 +134,7 @@ export class PluggableBotWidget extends HTMLElement {
       {
         message: text,
         pageContext: getPageContext(),
-        history: this.history.slice(-10), // send last 10 turns
+        history: this.history.slice(-MAX_HISTORY), // send last N turns
       },
       {
         onToken: (token: string) => {

@@ -1,7 +1,11 @@
 import type { KnowledgeChunk } from './types.js';
+import { env } from './env.js';
 
 // In-memory store — populated at startup from disk (wrangler dev only) and by /api/train
 let chunks: KnowledgeChunk[] = [];
+
+// Location of the on-disk knowledge store (only used where a filesystem exists).
+const knowledgeFile = `${env.dataDir}/knowledge.json`;
 
 type FsModule = {
   readFile: (path: string, enc: string) => Promise<string>;
@@ -17,7 +21,7 @@ type FsModule = {
 try {
   // @ts-ignore — node:fs/promises is not in @cloudflare/workers-types but is available under nodejs_compat
   const fs = await import('node:fs/promises') as FsModule;
-  const raw = await fs.readFile('data/knowledge.json', 'utf8');
+  const raw = await fs.readFile(knowledgeFile, 'utf8');
   const parsed = JSON.parse(raw) as KnowledgeChunk[];
   if (Array.isArray(parsed)) {
     chunks = parsed;
@@ -31,8 +35,8 @@ async function persist(): Promise<void> {
   try {
     // @ts-ignore — node:fs/promises is not in @cloudflare/workers-types but is available under nodejs_compat
     const fs = await import('node:fs/promises') as FsModule;
-    await fs.mkdir('data', { recursive: true });
-    await fs.writeFile('data/knowledge.json', JSON.stringify(chunks, null, 2), 'utf8');
+    await fs.mkdir(env.dataDir, { recursive: true });
+    await fs.writeFile(knowledgeFile, JSON.stringify(chunks, null, 2), 'utf8');
   } catch {
     // Ignore — expected to fail in Cloudflare Workers prod
   }
@@ -213,8 +217,8 @@ export function splitIntoChunks(
   title: string,
   url: string
 ): KnowledgeChunk[] {
-  const chunkSize = 500;
-  const overlap = 50;
+  const chunkSize = env.chunkSize;
+  const overlap = env.chunkOverlap;
   const result: KnowledgeChunk[] = [];
 
   // Normalize whitespace

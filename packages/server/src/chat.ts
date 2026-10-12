@@ -2,25 +2,9 @@ import type { Hono } from 'hono';
 import OpenAI from 'openai';
 import type { ChatRequest, Message } from './types.js';
 import { search } from './knowledge.js';
+import { env, getLlmApiKey } from './env.js';
 
 const enc = new TextEncoder();
-
-// ── Defaults ──────────────────────────────────────────────────────────────────
-// Free model list — verified October 2026 against openrouter.ai/models?q=:free
-// Free models rotate without notice; the safest default is openrouter/auto which
-// always picks an available free model automatically.
-// Override with LLM_MODEL in packages/server/.dev.vars.
-const FREE_MODELS = [
-  'openrouter/auto',                                // ← always routes to an available free model
-  'nvidia/nemotron-3-super-120b-a12b:free',         // 120B MoE — great for chat/agents
-  'nvidia/nemotron-3.5-lightning:free',             // 1M context — fast responses
-  'qwen/qwen3.8-27b:free',                          // 27B — strong multilingual chat
-  'poolside/laguna-s-2.1:free',                     // highest-traffic free model
-];
-
-const OPENROUTER_BASE = 'https://openrouter.ai/api/v1';
-const APP_TITLE       = 'Pluggable Bot';
-const APP_URL         = 'https://github.com/pluggable-bot';
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 function sseResponse(stream: ReadableStream): Response {
@@ -36,10 +20,10 @@ function sseResponse(stream: ReadableStream): Response {
 function buildClient(apiKey: string): OpenAI {
   return new OpenAI({
     apiKey,
-    baseURL: OPENROUTER_BASE,
+    baseURL: env.openrouterBaseUrl,
     defaultHeaders: {
-      'HTTP-Referer': APP_URL,
-      'X-Title':      APP_TITLE,
+      'HTTP-Referer': env.appUrl,
+      'X-Title':      env.appTitle,
     },
   });
 }
@@ -59,7 +43,7 @@ export function chatRoute(app: Hono): void {
     if (!message?.trim()) return c.json({ error: 'message required' }, 400);
 
     // ── RAG: retrieve relevant knowledge chunks ───────────────────────────────
-    const contextChunks = search(message, 5);
+    const contextChunks = search(message, env.ragTopK);
     const knowledgeText =
       contextChunks.length > 0
         ? contextChunks.map((ch) => ch.content).join('\n---\n')
@@ -71,7 +55,7 @@ export function chatRoute(app: Hono): void {
       `If the answer isn't in the knowledge base, say so clearly.\n\n` +
       `Knowledge base:\n${knowledgeText}`;
 
-    const safeHistory: Message[] = Array.isArray(history) ? history.slice(-10) : [];
+    const safeHistory: Message[] = Array.isArray(history) ? history.slice(-env.maxHistory) : [];
 
     const messages: Message[] = [
       { role: 'system', content: systemPrompt },
@@ -84,11 +68,11 @@ export function chatRoute(app: Hono): void {
 
     // ── Resolve API key: prefer OPENROUTER_API_KEY, fall back to OPENAI_API_KEY
     // (OpenRouter accepts the same key format for both fields.)
-    const apiKey = process.env.OPENROUTER_API_KEY || process.env.OPENAI_API_KEY;
+    const apiKey = getLlmApiKey();
 
     // ── LLM: real streaming via OpenRouter ────────────────────────────────────
     if (apiKey) {
-      const model = process.env.LLM_MODEL || FREE_MODELS[0];
+      const model = env.llmModel;
       const client = buildClient(apiKey);
 
       const readable = new ReadableStream({

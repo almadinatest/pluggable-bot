@@ -220,10 +220,10 @@
   &copy; 2025 Acme Analytics, Inc. &nbsp;·&nbsp; <a href="#">Privacy</a> &nbsp;·&nbsp; <a href="#">Terms</a>
 </footer>
 
-<!-- Pluggable Bot widget — points to local dev server -->
+<!-- Pluggable Bot widget — __API_URL__ is replaced at serve time (PUBLIC_API_URL env) -->
 <script
-  src="http://localhost:8787/widget/pluggable-bot.js"
-  data-api-url="http://localhost:8787"
+  src="__API_URL__/widget/pluggable-bot.js"
+  data-api-url="__API_URL__"
   data-bot-name="Acme Bot"
   data-primary-color="#4f46e5"
 ></script>
@@ -234,7 +234,7 @@
    * Click the "Train Bot on This Page" button (top-right) to invoke this.
    */
   function trainBot() {
-    fetch('http://localhost:8787/api/train', {
+    fetch('__API_URL__/api/train', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({

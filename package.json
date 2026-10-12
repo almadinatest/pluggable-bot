@@ -5,10 +5,11 @@
     "packages/*"
   ],
   "scripts": {
-    "build": "npm run build -w packages/widget",
-    "start": "npm run build -w packages/widget && npx dotenv -e .env.local -- npx tsx packages/server/src/local-dev.ts",
-    "start:dev": "concurrently --names \"widget,server\" --prefix-colors \"cyan,magenta\" \"npm run build:dev -w packages/widget\" \"npx dotenv -e .env.local -- npx tsx watch packages/server/src/local-dev.ts\"",
-    "dev": "npx dotenv -e .env.local -- npx tsx watch packages/server/src/local-dev.ts",
+    "gen:assets": "node scripts/generate-assets.mjs",
+    "build": "npm run build -w packages/widget && npm run gen:assets",
+    "start": "npm run build && npx dotenv -e .env.local -- npx tsx packages/server/src/local-dev.ts",
+    "start:dev": "npm run build && concurrently --names \"widget,server\" --prefix-colors \"cyan,magenta\" \"npm run build:dev -w packages/widget\" \"npx dotenv -e .env.local -- npx tsx watch packages/server/src/local-dev.ts\"",
+    "dev": "npm run gen:assets && npx dotenv -e .env.local -- npx tsx watch packages/server/src/local-dev.ts",
     "typecheck": "npm run typecheck -w packages/widget && npm run typecheck -w packages/server"
   },
   "devDependencies": {

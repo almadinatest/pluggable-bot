@@ -33,18 +33,18 @@ Open **http://localhost:8787** in your browser. You'll see the Acme Analytics de
 
 ## Embed on Any Website
 
-Add a single `<script>` tag before `</body>`:
+Add a single `<script>` tag before `</body>` — no API URL is hard-coded. If the page is served by the bot server, use same-origin relative URLs (`data-api-url=""`):
 
 ```html
 <script
-  src="http://localhost:8787/widget/pluggable-bot.js"
-  data-api-url="http://localhost:8787"
+  src="/widget/pluggable-bot.js"
+  data-api-url=""
   data-bot-name="My Bot"
   data-primary-color="#4f46e5"
 ></script>
 ```
 
-For production, replace `http://localhost:8787` with your deployed Worker URL.
+If your API lives on another origin, point `data-api-url` at it directly (or set the `PUBLIC_API_URL` env var — the server substitutes `__API_URL__` placeholders in the demo pages it serves).
 
 ---
 
@@ -79,19 +79,30 @@ The server splits long content into overlapping ~500-character chunks, scores th
 
 ## Configuration
 
-Configure the widget via `data-*` attributes on the `<script>` tag:
+Widget defaults are baked from build-time env (see `WIDGET_*` below) and can be overridden per embed via `data-*` attributes on the `<script>` tag:
 
-| Attribute            | Default              | Description                                        |
-|----------------------|----------------------|----------------------------------------------------|
-| `data-api-url`       | `http://localhost:8787` | Base URL of your pluggable-bot server           |
-| `data-bot-name`      | `Bot`                | Display name shown in the chat header              |
-| `data-primary-color` | `#4f46e5`            | Accent color used for the launcher and send button |
+| Attribute            | Default                | Description                                        |
+|----------------------|------------------------|----------------------------------------------------|
+| `data-api-url`       | same-origin (`""`)     | Base URL of your pluggable-bot server              |
+| `data-bot-name`      | `Bot` (or `WIDGET_BOT_NAME`) | Display name shown in the chat header         |
+| `data-primary-color` | `#1a1a2e` (or `WIDGET_PRIMARY_COLOR`) | Accent color for launcher/send button |
 
-Server configuration (`packages/server/.dev.vars` for local dev, Wrangler secrets for production):
+Server configuration — everything is read from the environment (`.env.local` for local dev via `dotenv`, Vercel project env vars / Wrangler secrets for production). See `.env.example` for the full annotated list:
 
-| Variable         | Default | Description                                            |
-|------------------|---------|--------------------------------------------------------|
-| `OPENAI_API_KEY` | `""`    | OpenAI API key. If empty, the bot runs in mock mode.   |
+| Variable               | Default | Description                                            |
+|------------------------|---------|--------------------------------------------------------|
+| `OPENROUTER_API_KEY`   | `""`    | OpenRouter key (free). If empty, the bot runs in mock mode. |
+| `OPENAI_API_KEY`       | `""`    | Legacy fallback key, used only if the OpenRouter one is unset. |
+| `LLM_MODEL`            | `openrouter/auto` | Model to use for chat.                          |
+| `OPENROUTER_BASE_URL`  | `https://openrouter.ai/api/v1` | Override the LLM endpoint.             |
+| `PORT`                 | `8787`  | Local dev server port.                               |
+| `CORS_ORIGIN`          | `*`     | Allowed CORS origin.                                 |
+| `PUBLIC_API_URL`       | `""`    | Public API base URL injected into served demo pages (`__API_URL__` placeholder). Empty = same origin. |
+| `DATA_DIR`             | `data`  | Directory for the on-disk knowledge store.           |
+| `RAG_TOP_K`            | `5`     | How many chunks are injected as context per query.   |
+| `CHUNK_SIZE` / `CHUNK_OVERLAP` | `500` / `50` | Knowledge chunking settings.        |
+| `MAX_HISTORY`          | `10`    | How many prior turns are sent to the model.          |
+| `WIDGET_*`             | various | Widget bundle-time defaults (API URL, name, color, position, context limit, history). |
 
 ---
 

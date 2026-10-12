@@ -3,17 +3,21 @@ import { cors } from 'hono/cors';
 import { chatRoute } from './chat.js';
 import { trainRoute } from './train.js';
 import { getChunkCount, seedMhtKnowledge } from './knowledge.js';
+import { env } from './env.js';
+import { WIDGET_JS, MHT_HTML, INDEX_HTML } from './assets.generated.js';
 
 // Pre-seed MHT knowledge base at startup
 seedMhtKnowledge();
 
-// Static ES Module compilation inputs for Cloudflare Workers
-import WIDGET_JS_STATIC from "../../../widget/dist/pluggable-bot.js";
-import MHT_HTML_STATIC from "../../../../demo/mht-portal.html";
-import INDEX_HTML_STATIC from "../../../../demo/index.html";
+// Replace the __API_URL__ placeholder in demo pages at serve time so the
+// pages work on any deployment without hard-coding an origin. An empty
+// PUBLIC_API_URL means "same origin" (relative URLs).
+function renderPage(html: string): string {
+  return html.split('__API_URL__').join(env.publicApiUrl);
+}
 
 const app = new Hono();
-app.use('*', cors());
+app.use('*', cors({ origin: env.corsOrigin }));
 
 chatRoute(app);
 trainRoute(app);
@@ -22,59 +26,33 @@ app.get('/api/health', (c) => {
   return c.json({ status: 'ok', chunks: getChunkCount() });
 });
 
-// Helper function to resolve files seamlessly across Vercel and Cloudflare
-async function loadAsset(staticAsset: string, relativePath: string): Promise<string> {
-  // If the bundler pre-loaded it into memory (Cloudflare Workers strategy), use it!
-  if (staticAsset && staticAsset.trim().length > 0 && !staticAsset.startsWith("<!doctype html>")) {
-    return staticAsset;
-  }
-  
-  // Vercel Serverless Fallback: Read dynamically from disk using Node compatibility layer
-  try {
-    const fs = await import('node:fs');
-    const path = await import('node:path');
-    const { fileURLToPath } = await import('node:url');
-    
-    const __dirname = fileURLToPath(new URL('.', import.meta.url));
-    const projectRoot = path.join(__dirname, '..', '..', '..');
-    const targetPath = path.join(projectRoot, ...relativePath.split('/'));
-    
-    return fs.readFileSync(targetPath, 'utf8');
-  } catch (e) {
-    return '';
-  }
-}
-
-// Serve the compiled widget JS
-app.get('/widget/pluggable-bot.js', async (c) => {
-  const js = await loadAsset(WIDGET_JS_STATIC, "packages/widget/dist/pluggable-bot.js");
-  if (!js) {
+// Serve the compiled widget JS (inlined at build time by scripts/generate-assets.mjs)
+app.get('/widget/pluggable-bot.js', (c) => {
+  if (!WIDGET_JS) {
     return new Response('// widget not built yet — run: npm run build', {
       status: 404,
       headers: { 'Content-Type': 'application/javascript' },
     });
   }
-  return new Response(js, {
+  return new Response(WIDGET_JS, {
     headers: {
       'Content-Type': 'application/javascript',
-      'Cache-Control': 'public, max-age=3600',
+      'Cache-Control': `public, max-age=${env.widgetCacheMaxAge}`,
       'Access-Control-Allow-Origin': '*',
     },
   });
 });
 
 // MHT ePortal demo page
-app.get('/mht', async (c) => {
-  const html = await loadAsset(MHT_HTML_STATIC, "demo/mht-portal.html");
-  if (!html) return c.html('<h1>MHT portal page not found</h1>', 404);
-  return c.html(html);
+app.get('/mht', (c) => {
+  if (!MHT_HTML) return c.html('<h1>MHT portal page not found</h1>', 404);
+  return c.html(renderPage(MHT_HTML));
 });
 
 // Demo index page
-app.get('/', async (c) => {
-  const html = await loadAsset(INDEX_HTML_STATIC, "demo/index.html");
-  if (!html) return c.html(DEMO_HTML);
-  return c.html(html);
+app.get('/', (c) => {
+  if (!INDEX_HTML) return c.html(DEMO_HTML);
+  return c.html(renderPage(INDEX_HTML));
 });
 
 const DEMO_HTML = `<!DOCTYPE html>

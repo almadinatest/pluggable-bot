@@ -4,22 +4,22 @@ compatibility_date = "2024-09-23"
 compatibility_flags = ["nodejs_compat"]
 
 # To set secrets locally, create a .dev.vars file in packages/server/ with:
-# OPENAI_API_KEY=sk-...
+# OPENROUTER_API_KEY=sk-...
 # This file is gitignored and only used by wrangler dev.
 
 [vars]
 OPENAI_API_KEY = ""
 OPENROUTER_API_KEY = ""
+OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1"
 LLM_MODEL = "openrouter/auto"
-
-# Replaces [text_blobs] for ES Module Workers
-[[rules]]
-globs = ["**/*.js"]
-type = "Text"
-fallthrough = true
-
-[[rules]]
-globs = ["**/*.html"]
-type = "Text"
-fallthrough = true
+APP_TITLE = "Pluggable Bot"
+APP_URL = "https://github.com/pluggable-bot"
+CORS_ORIGIN = "*"
+PUBLIC_API_URL = ""
+DATA_DIR = "data"
+RAG_TOP_K = "5"
+CHUNK_SIZE = "500"
+CHUNK_OVERLAP = "50"
+MAX_HISTORY = "10"
+WIDGET_CACHE_MAX_AGE = "3600"
 

@@ -6,9 +6,7 @@
 # Free tier: 20 req/min, 50 req/day (200 req/day after $10 lifetime spend).
 OPENROUTER_API_KEY=sk-or-v1-your-key-here
 
-# Optional: pin a specific free model.
-# Default is "openrouter/auto" which always routes to an available free model.
-#
+# Optional: pin a specific free model. Default is "openrouter/auto".
 # Verified free models — October 2026 (https://openrouter.ai/models?q=:free):
 #LLM_MODEL=openrouter/auto                            # auto-pick best available (recommended)
 #LLM_MODEL=nvidia/nemotron-3-super-120b-a12b:free     # 120B MoE, great for chat/agents
@@ -20,5 +18,19 @@ OPENROUTER_API_KEY=sk-or-v1-your-key-here
 # ⚠️  Free model IDs rotate — check https://openrouter.ai/models?q=:free for
 #     the current list before pinning a specific model.
 #
-# ── Legacy OpenAI key (optional, not needed if OPENROUTER_API_KEY is set) ─────
+# ── Other optional overrides (see root .env.example for the full list) ────────
+#OPENROUTER_BASE_URL=https://openrouter.ai/api/v1
+#APP_TITLE=Pluggable Bot
+#APP_URL=https://github.com/pluggable-bot
+#PORT=8787
+#CORS_ORIGIN=*
+#PUBLIC_API_URL=
+#DATA_DIR=data
+#RAG_TOP_K=5
+#CHUNK_SIZE=500
+#CHUNK_OVERLAP=50
+#MAX_HISTORY=10
+#WIDGET_CACHE_MAX_AGE=3600
+#
+# Legacy OpenAI key (optional, not needed if OPENROUTER_API_KEY is set):
 #OPENAI_API_KEY=sk-...
