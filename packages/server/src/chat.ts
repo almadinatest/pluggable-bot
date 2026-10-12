@@ -116,15 +116,14 @@ export function chatRoute(app: Hono): void {
       mockAnswer =
         `Based on the knowledge base (demo mode — no API key):\n\n` +
         `**${topChunk.title}**\n${topChunk.content}\n\n` +
-        `---\n_To enable real AI responses, add your free OpenRouter API key:_\n` +
-        `_Create \`packages/server/.dev.vars\` with:_\n` +
-        `\`OPENROUTER_API_KEY=sk-or-...\`\n` +
+        `---\n_Demo mode: no API key configured, so I answered from the knowledge base._\n` +
+        `_To enable real AI, set the \`OPENROUTER_API_KEY\` environment variable on your deployment — Vercel: Settings → Environment Variables; Cloudflare: \`wrangler secret put OPENROUTER_API_KEY\` — then redeploy._\n` +
         `_Get a free key at [openrouter.ai](https://openrouter.ai) — no credit card needed._`;
     } else {
       mockAnswer =
         `Demo mode — no API key configured and no knowledge base content found.\n\n` +
         `Click **"Train Bot on This Page"** to add content, then ask again.\n\n` +
-        `To enable real AI: add \`OPENROUTER_API_KEY=sk-or-...\` to \`packages/server/.dev.vars\`.\n` +
+        `To enable real AI: set the \`OPENROUTER_API_KEY\` environment variable on your deployment — Vercel: Settings → Environment Variables; Cloudflare: \`wrangler secret put OPENROUTER_API_KEY\`.\n` +
         `Get a free key at [openrouter.ai](https://openrouter.ai) — no credit card needed.`;
     }
 
