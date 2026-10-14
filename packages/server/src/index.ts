@@ -20,6 +20,28 @@ function renderPage(html: string): string {
   return html.split('__API_URL__').join(env.publicApiUrl);
 }
 
+/**
+ * Public origin of the current request. Vercel/Cloudflare terminate TLS in front
+ * of the function and may forward an `http` URL, so we prefer the proxy headers —
+ * otherwise absolute /proxy links would be emitted as http:// on an https page
+ * and be blocked as mixed content.
+ */
+function publicOrigin(c: { req: { url: string; header: (n: string) => string | undefined } }): string {
+  let u: URL;
+  try {
+    u = new URL(c.req.url);
+  } catch {
+    return '';
+  }
+  const proto =
+    c.req.header('x-forwarded-proto')?.split(',')[0]?.trim() || u.protocol.replace(':', '');
+  const host =
+    c.req.header('x-forwarded-host')?.split(',')[0]?.trim() ||
+    c.req.header('host') ||
+    u.host;
+  return `${proto}://${host}`;
+}
+
 const app = new Hono();
 app.use('*', cors({ origin: env.corsOrigin }));
 
@@ -51,7 +73,7 @@ app.all('/proxy', async (c) => {
   if (!url) return c.text('url required', 400);
   // Absolute base for our own /proxy links — required because the target page
   // sets <base href="target/">, which would otherwise re-resolve them.
-  const selfOrigin = env.publicApiUrl || new URL(c.req.url).origin;
+  const selfOrigin = env.publicApiUrl || publicOrigin(c);
   try {
     const init: RequestInit = {};
     if (c.req.method === 'POST') {
