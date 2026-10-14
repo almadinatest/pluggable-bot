@@ -34,7 +34,9 @@ export function chatRoute(app: Hono): void {
     // ── Parse body ────────────────────────────────────────────────────────────
     let body: ChatRequest;
     try {
-      body = await c.req.json<ChatRequest>();
+      // Read as text and strip a UTF-8 BOM before parsing: some clients (e.g.
+      // Windows tooling) prefix the body with one, which workerd rejects.
+      body = JSON.parse((await c.req.text()).replace(/^\uFEFF/, '')) as ChatRequest;
     } catch {
       return c.json({ error: 'invalid JSON body' }, 400);
     }

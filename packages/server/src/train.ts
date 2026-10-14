@@ -7,7 +7,9 @@ export function trainRoute(app: Hono): void {
   app.post('/api/train', async (c) => {
     let body: TrainRequest;
     try {
-      body = await c.req.json<TrainRequest>();
+      // Read as text and strip a UTF-8 BOM before parsing: some clients (e.g.
+      // Windows tooling) prefix the body with one, which workerd rejects.
+      body = JSON.parse((await c.req.text()).replace(/^\uFEFF/, '')) as TrainRequest;
     } catch {
       return c.json({ error: 'invalid JSON body' }, 400);
     }
