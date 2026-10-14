@@ -24,6 +24,23 @@ export class PluggableBotWidget extends HTMLElement {
   private history: HistoryEntry[] = [];
   private isOpen = false;
   private isStreaming = false;
+  private viewportBound = false;
+
+  /** Keeps the full-screen mobile panel aligned to the visible viewport so the
+   *  on-screen keyboard never covers the input. No-op on the desktop card,
+   *  whose CSS ignores the --pb-* variables. */
+  private readonly onViewportChange = (): void => {
+    const panel = this.shadow.getElementById('panel') as HTMLElement | null;
+    if (!panel) return;
+    const vv = window.visualViewport;
+    if (!vv) {
+      panel.style.removeProperty('--pb-top');
+      panel.style.removeProperty('--pb-height');
+      return;
+    }
+    panel.style.setProperty('--pb-top', `${Math.round(vv.offsetTop)}px`);
+    panel.style.setProperty('--pb-height', `${Math.round(vv.height)}px`);
+  };
 
   constructor() {
     super();
@@ -44,6 +61,10 @@ export class PluggableBotWidget extends HTMLElement {
 
     this.render();
     this.wireEvents();
+  }
+
+  disconnectedCallback(): void {
+    this.unbindViewport();
   }
 
   private positionClass(): string {
@@ -88,6 +109,8 @@ export class PluggableBotWidget extends HTMLElement {
             type="text"
             placeholder="${s.placeholder}"
             autocomplete="off"
+            enterkeyhint="send"
+            inputmode="text"
             aria-label="${s.inputLabel}"
           />
           <button id="send">${s.send}</button>
@@ -148,10 +171,36 @@ export class PluggableBotWidget extends HTMLElement {
     const panel = this.shadow.getElementById('panel')!;
     if (this.isOpen) {
       panel.classList.add('open');
-      (this.shadow.getElementById('input') as HTMLInputElement)?.focus();
+      this.bindViewport();
+      // Focus after the panel is laid out; `preventScroll` avoids iOS jumping
+      // the host page when the keyboard opens.
+      requestAnimationFrame(() => {
+        (this.shadow.getElementById('input') as HTMLInputElement)?.focus({ preventScroll: true });
+      });
     } else {
       panel.classList.remove('open');
+      this.unbindViewport();
     }
+  }
+
+  /** Start tracking the visual viewport (keyboard) while the panel is open. */
+  private bindViewport(): void {
+    this.onViewportChange();
+    const vv = window.visualViewport;
+    if (!vv || this.viewportBound) return;
+    vv.addEventListener('resize', this.onViewportChange);
+    vv.addEventListener('scroll', this.onViewportChange);
+    window.addEventListener('orientationchange', this.onViewportChange);
+    this.viewportBound = true;
+  }
+
+  private unbindViewport(): void {
+    const vv = window.visualViewport;
+    if (!this.viewportBound || !vv) return;
+    vv.removeEventListener('resize', this.onViewportChange);
+    vv.removeEventListener('scroll', this.onViewportChange);
+    window.removeEventListener('orientationchange', this.onViewportChange);
+    this.viewportBound = false;
   }
 
   private async sendMessage(): Promise<void> {

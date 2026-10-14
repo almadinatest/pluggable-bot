@@ -55,6 +55,20 @@ The widget ships with English and Arabic UI strings, full RTL layout, and a lang
 - Set `data-lang="ar"` (or `"en"`) to force the initial language. Users can still toggle via the header button.
 - `data-position` supports `bottom-right` (default), `bottom-left`, `top-right`, `top-left`.
 
+### Mobile
+
+The widget is built mobile-first:
+
+- **Phones/tablets** — the panel opens as a full-screen sheet sized to the *visual* viewport, so the on-screen keyboard never covers the input; the launcher respects notch/safe-area insets.
+- **Desktop (≥480px)** — it's the floating 380×520 card anchored per `data-position`.
+- The message input is 16px on mobile (prevents iOS zoom-on-focus), touch targets are ≥44px, hover affordances only apply to real pointers, and long words/URLs wrap instead of overflowing.
+
+For safe-area insets on notched devices, add `viewport-fit=cover` to your page's viewport meta:
+
+```html
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+```
+
 ---
 
 ## Plug the Bot onto Any Web Link
