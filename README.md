@@ -144,7 +144,21 @@ Response:
 { "chunksAdded": 3, "total": 3 }
 ```
 
-The server splits long content into overlapping ~500-character chunks, scores them with TF-IDF for each query, and feeds the top-5 matches as context into the AI prompt.
+The server splits long content into overlapping ~500-character chunks and ranks them for each query with an **Arabic-aware TF-IDF** scorer, feeding the top-5 matches as context into the AI prompt. The scorer normalizes Arabic orthography (diacritics, alef/yaa/taa-marbuta variants, the definite article) and applies light English stemming (license/licensing/licenses, renewal/renew) so spelling variants still match, then boosts chunks whose **title/name** matches and rewards broader query coverage.
+
+### Bilingual (English + Arabic) crawling
+
+`crawlSite()` accepts a list of locales. The MHT ePortal renders in Arabic when it receives its culture cookie, so `npm run crawl` fetches the catalogue in **both** languages and merges the results by service URL into bilingual records:
+
+```ts
+const locales = [
+  { code: 'en' },
+  { code: 'ar', headers: { Cookie: '.AspNetCore.Culture=c=ar-OM|uic=ar-OM' } },
+];
+await crawlSite('https://stg-eportal.mht.gov.om/', { locales });
+```
+
+Each service then carries its English **and** Arabic name, category and group, so an Arabic question such as «كيف أجدد رخصة مرشد سياحي؟» resolves to the correct service (`INV_LIC_S_021`).
 
 ### 3. Crawl a whole site
 
@@ -154,10 +168,10 @@ The server splits long content into overlapping ~500-character chunks, scores th
 curl -X POST https://your-server/api/crawl \
   -H 'Content-Type: application/json' \
   -d '{ "url": "https://stg-eportal.mht.gov.om/", "maxPages": 120 }'
-# → { "pages": 51, "services": 37, "chunksAdded": 70, "total": 85 }
+# → { "pages": 65, "services": 37, "chunksAdded": 100, "total": 115 }
 ```
 
-It follows same-origin links, extracts each page's text, and (for the MHT ePortal) parses the full eServices catalogue — every group, category and service — from the landing page.
+It follows same-origin links, extracts each page's text, and (for the MHT ePortal) parses the full eServices catalogue — every group, category and service — from the landing page. Pass multiple locales to crawl bilingually (see below).
 
 ### 4. Bake a site snapshot into the build (recommended for serverless)
 
@@ -168,7 +182,7 @@ npm run crawl        # → data/mht-crawl.json  (committed)
 npm run build        # inlines it into the bundle (scripts/generate-assets.mjs)
 ```
 
-`seedMhtKnowledge()` then loads the curated bilingual (EN/AR) seed **plus** the baked catalogue, so the deployed bot already knows all 37 eServices without any runtime setup. Re-run `npm run crawl` + redeploy whenever the portal changes.
+`seedMhtKnowledge()` then loads the curated bilingual (EN/AR) seed **plus** the baked bilingual catalogue, so the deployed bot already knows all 37 eServices (in English and Arabic) without any runtime setup. Re-run `npm run crawl` + redeploy whenever the portal changes.
 
 > Note: the MHT ePortal is a Blazor Server app — individual `/service/*` pages render client-side behind a login, so only the landing-page catalogue and the sign-in page expose text server-side. Service records are therefore synthesised from the catalogue (name, group, category, URL).
 

@@ -63,18 +63,67 @@ export function getChunkCount(): number {
   return chunks.length;
 }
 
-/** Tokenize a string into lowercase Unicode words (Latin, Arabic, digits, …). */
-function tokenize(text: string): string[] {
-  return text.toLowerCase().match(/[\p{L}\p{N}]+/gu) ?? [];
+/**
+ * Normalize Arabic orthography so spelling variants collapse to one form:
+ * drop diacritics/tatweel and unify alef / yaa / waw-hamza / taa-marbuta.
+ */
+function normalizeArabic(word: string): string {
+  return word
+    .replace(/[\u0610-\u061A\u064B-\u065F\u0670\u06D6-\u06ED]/g, '') // harakat / tashkeel
+    .replace(/\u0640/g, '') // tatweel
+    .replace(/[\u0622\u0623\u0625\u0627\u0671]/g, '\u0627') // آ أ إ ا ٱ → ا
+    .replace(/\u0649/g, '\u064A') // ى → ي
+    .replace(/\u0626/g, '\u064A') // ئ → ي
+    .replace(/\u0624/g, '\u0648') // ؤ → و
+    .replace(/\u0629/g, '\u0647'); // ة → ه
 }
 
 /**
- * TF-IDF search — returns topK chunks ranked by relevance to query.
+ * Very light English stemmer: folds plurals and a few common suffixes so that
+ * e.g. license / licensing / licenses and renewal / renew share a token.
+ * Both the raw and the stemmed form are indexed, so exact matches still win.
+ */
+function stemEn(w: string): string {
+  if (w.length > 4 && w.endsWith('ies')) w = w.slice(0, -3) + 'y';
+  else if (w.length > 4 && w.endsWith('es')) w = w.slice(0, -2);
+  else if (w.length > 3 && w.endsWith('s') && !w.endsWith('ss')) w = w.slice(0, -1);
+  if (w.length > 6 && w.endsWith('ing')) w = w.slice(0, -3);
+  else if (w.length > 5 && w.endsWith('ed')) w = w.slice(0, -2);
+  else if (w.length > 5 && w.endsWith('al')) w = w.slice(0, -2);
+  if (w.length > 4 && w.endsWith('e')) w = w.slice(0, -1);
+  return w;
+}
+
+/**
+ * Tokenize to lowercase Unicode words, emitting extra normalized variants for
+ * Arabic (orthography + definite article) and English (light stemming).
+ */
+function tokenize(text: string): string[] {
+  const words = text.toLowerCase().normalize('NFKC').match(/[\p{L}\p{N}]+/gu) ?? [];
+  const out: string[] = [];
+  for (const w of words) {
+    const n = normalizeArabic(w);
+    if (!n) continue;
+    out.push(n);
+    if (/^[\p{Script=Arabic}]+$/u.test(n)) {
+      if (n.length > 4 && n.startsWith('\u0627\u0644')) out.push(n.slice(2)); // strip الـ
+      if (n.length > 5 && n.startsWith('\u0648')) out.push(n.slice(1)); // strip وـ
+    } else if (/[a-z]/.test(n)) {
+      const st = stemEn(n);
+      if (st !== n && st.length >= 3) out.push(st);
+    }
+  }
+  return out;
+}
+
+/**
+ * TF-IDF search — returns topK chunks ranked by relevance to query, with a
+ * title boost and a query-coverage bonus so specific service names rank first.
  */
 export function search(query: string, topK = 5): KnowledgeChunk[] {
   if (chunks.length === 0) return [];
 
-  const queryTokens = tokenize(query);
+  const queryTokens = [...new Set(tokenize(query))];
   if (queryTokens.length === 0) return chunks.slice(0, topK);
 
   const N = chunks.length;
@@ -91,17 +140,25 @@ export function search(query: string, topK = 5): KnowledgeChunk[] {
   // Score each chunk
   const scored = chunks.map((chunk) => {
     const chunkTokens = tokenize(chunk.content + ' ' + chunk.title);
+    const titleTokens = new Set(tokenize(chunk.title));
     const termFreq: Record<string, number> = {};
     for (const t of chunkTokens) {
       termFreq[t] = (termFreq[t] ?? 0) + 1;
     }
 
     let score = 0;
+    let matched = 0;
     for (const token of queryTokens) {
-      const tf = (termFreq[token] ?? 0) / (chunkTokens.length || 1);
       const idf = Math.log(1 + N / (1 + (df[token] ?? 0)));
-      score += tf * idf;
+      const freq = termFreq[token] ?? 0;
+      if (freq > 0) {
+        matched++;
+        score += (freq / (chunkTokens.length || 1)) * idf;
+        if (titleTokens.has(token)) score += idf * 0.8; // title/name boost
+      }
     }
+    // Reward chunks that cover more of the query.
+    score *= 1 + 0.5 * (matched / queryTokens.length);
 
     return { ...chunk, score };
   });
