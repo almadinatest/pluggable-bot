@@ -24,6 +24,7 @@ const assets = [
   { name: 'INDEX_HTML', file: 'demo/index.html', required: true },
   { name: 'VIEW_HTML', file: 'demo/view.html', required: true },
   { name: 'PLUG_HTML', file: 'demo/plug.html', required: true },
+  { name: 'MHT_CRAWL_JSON', file: 'data/mht-crawl.json', required: false },
 ];
 
 let out =

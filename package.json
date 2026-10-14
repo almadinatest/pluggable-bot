@@ -6,6 +6,7 @@
   ],
   "scripts": {
     "gen:assets": "node scripts/generate-assets.mjs",
+    "crawl": "npx tsx scripts/crawl-mht.ts",
     "build": "npm run build -w packages/widget && npm run gen:assets",
     "start": "npm run build && npx dotenv -e .env.local -- npx tsx packages/server/src/local-dev.ts",
     "start:dev": "npm run build && concurrently --names \"widget,server\" --prefix-colors \"cyan,magenta\" \"npm run build:dev -w packages/widget\" \"npx dotenv -e .env.local -- npx tsx watch packages/server/src/local-dev.ts\"",

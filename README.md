@@ -107,7 +107,15 @@ curl -X POST https://your-server/api/train \
 
 The fetch is guarded against SSRF: only `http(s)` targets are allowed, and localhost / private / link-local addresses are rejected.
 
-The proxy endpoint (`/view` → **Proxy** tab, or `GET /proxy?url=…`) does the same guard, then rewrites the page: it injects a `<base>` so its CSS/JS/images load from the real site, routes same-site links through `/proxy`, and serves it from our origin — so the target's framing policy never applies. Interactive features that need cookies or websockets (e.g. logins) may not work through the proxy.
+The proxy endpoint (`/view` → **Proxy** tab, or `GET /proxy?url=…`) does the same guard, then rewrites the page: it injects a `<base>` so its CSS/JS/images load from the real site, routes same-site links, forms and stylesheets through `/proxy`, and serves it from our origin — so the target's framing policy never applies.
+
+To keep the browser console clean, the proxy also:
+
+- **drops the Blazor bootstrap script** (`_framework/blazor.web.js`). Its SignalR circuit can only connect same-origin, so cross-origin it just logged CORS errors and showed the "An error has occurred" toast;
+- **routes stylesheets through `/proxy`** and rewrites their `url(...)` font/image references to same-origin requests, so the target's fonts no longer fail CORS;
+- **passes binary resources (fonts, images) through untouched**, and hides the (now inert) Blazor error UI.
+
+Interactive features that need cookies, websockets or Blazor interactivity (logins, dynamic forms) still will not work through the proxy.
 
 ---
 
@@ -137,6 +145,32 @@ Response:
 ```
 
 The server splits long content into overlapping ~500-character chunks, scores them with TF-IDF for each query, and feeds the top-5 matches as context into the AI prompt.
+
+### 3. Crawl a whole site
+
+`POST /api/crawl` crawls a site and indexes all of its text:
+
+```bash
+curl -X POST https://your-server/api/crawl \
+  -H 'Content-Type: application/json' \
+  -d '{ "url": "https://stg-eportal.mht.gov.om/", "maxPages": 120 }'
+# → { "pages": 51, "services": 37, "chunksAdded": 70, "total": 85 }
+```
+
+It follows same-origin links, extracts each page's text, and (for the MHT ePortal) parses the full eServices catalogue — every group, category and service — from the landing page.
+
+### 4. Bake a site snapshot into the build (recommended for serverless)
+
+Serverless instances have no writable disk and reset on cold starts, so instead of crawling at request time the MHT ePortal is **pre-crawled at build time** and merged into the seed:
+
+```bash
+npm run crawl        # → data/mht-crawl.json  (committed)
+npm run build        # inlines it into the bundle (scripts/generate-assets.mjs)
+```
+
+`seedMhtKnowledge()` then loads the curated bilingual (EN/AR) seed **plus** the baked catalogue, so the deployed bot already knows all 37 eServices without any runtime setup. Re-run `npm run crawl` + redeploy whenever the portal changes.
+
+> Note: the MHT ePortal is a Blazor Server app — individual `/service/*` pages render client-side behind a login, so only the landing-page catalogue and the sign-in page expose text server-side. Service records are therefore synthesised from the catalogue (name, group, category, URL).
 
 ---
 
@@ -186,8 +220,9 @@ Browser
 ```
 
 - **Widget** (`packages/widget/`) — Vanilla TypeScript Custom Element compiled to a single IIFE JS file by esbuild. Zero dependencies at runtime.
-- **Server** (`packages/server/`) — [Hono](https://hono.dev/) app running on Cloudflare Workers. Routes: `GET /`, `GET /plug`, `GET /view`, `GET /api/health`, `GET /api/reader`, `GET/POST /proxy`, `GET /widget/pluggable-bot.js`, `POST /api/train`, `POST /api/chat`.
-- **Knowledge store** — In-memory array of text chunks. Persisted to `packages/server/data/knowledge.json` under `wrangler dev` (Node.js compat). In production Workers, the store resets each cold start (suitable for demos; production workloads should use Cloudflare D1 or KV).
+- **Server** (`packages/server/`) — [Hono](https://hono.dev/) app running on Cloudflare Workers. Routes: `GET /`, `GET /plug`, `GET /view`, `GET /api/health`, `GET /api/reader`, `GET/POST /proxy`, `GET /widget/pluggable-bot.js`, `POST /api/train`, `POST /api/crawl`, `POST /api/chat`.
+- **Knowledge store** — In-memory array of text chunks, seeded from the curated MHT content + the baked site snapshot (`data/mht-crawl.json`). Persisted to `packages/server/data/knowledge.json` under `wrangler dev` (Node.js compat). In production Workers, the store resets each cold start (suitable for demos; production workloads should use Cloudflare D1 or KV), but the baked seed is always re-applied.
+- **Crawler** (`packages/server/src/crawl.ts`) — SSRF-guarded site crawler + MHT catalogue parser. Used by `POST /api/crawl` at runtime and by `scripts/crawl-mht.ts` at build time.
 - **Streaming** — Server returns `text/event-stream` using the Workers `ReadableStream` API. Widget reads chunks via `fetch` + `TextDecoderStream` reader.
 
 ---
@@ -229,6 +264,7 @@ pluggable-bot/
 │       │   ├── types.ts    # Shared TypeScript interfaces
 │       │   ├── knowledge.ts # TF-IDF search + chunk store
 │       │   ├── extract.ts  # Server-side URL fetch + HTML→text (SSRF-guarded)
+│       │   ├── crawl.ts    # Site crawler + MHT eServices catalogue parser
 │       │   ├── proxy.ts    # HTML proxy rewrite for sites that block framing
 │       │   ├── train.ts    # POST /api/train handler (content or URL)
 │       │   ├── chat.ts     # POST /api/chat handler (SSE)
@@ -240,6 +276,11 @@ pluggable-bot/
 │   ├── mht-portal.html     # MHT ePortal bilingual demo
 │   ├── plug.html           # /plug — viewer link, bookmarklet, embed snippet
 │   └── view.html           # /view — view any URL with the bot attached
+├── scripts/
+│   ├── generate-assets.mjs # Inlines HTML/widget/crawl-snapshot into assets.generated.ts
+│   └── crawl-mht.ts        # Build-time crawl → data/mht-crawl.json
+├── data/
+│   └── mht-crawl.json      # Baked MHT ePortal snapshot (committed; `npm run crawl`)
 └── README.md
 ```
 

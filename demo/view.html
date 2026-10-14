@@ -148,15 +148,21 @@
       .catch(function (e) { setStatus('Training failed: ' + e.message, 'err'); });
   }
 
-  function apply(u) {
+  function apply(u, mode) {
     if (!isHttp(u)) { setStatus('Enter a valid http(s) URL', 'err'); return; }
     current = u;
     input.value = u;
-    try { history.replaceState(null, '', '?url=' + encodeURIComponent(u)); } catch (e) {}
+    var m = mode || activeMode;
+    try {
+      history.replaceState(null, '', '?url=' + encodeURIComponent(u) + (m === 'site' ? '' : '&mode=' + m));
+    } catch (e) {}
     openExt.href = u;
     document.title = 'Bot Viewer — ' + u;
-    showSite();
-    frame.src = u;
+    // Load only the selected mode so the raw (possibly framing-blocked) URL is
+    // never requested in the background.
+    if (m === 'proxy') showProxy();
+    else if (m === 'reader') showReader();
+    else showSite();
     train(u);
   }
 
@@ -166,11 +172,8 @@
   btnReader.addEventListener('click', showReader);
 
   var initial = params.get('url') || '';
-  var mode = params.get('mode') || 'site';
   if (initial) {
-    apply(initial);
-    if (mode === 'proxy') showProxy();
-    else if (mode === 'reader') showReader();
+    apply(initial, params.get('mode') || 'site');
   } else {
     setStatus('Paste a link above to load it with the bot plugged in.');
   }

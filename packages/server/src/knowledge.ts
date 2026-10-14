@@ -1,5 +1,6 @@
 import type { KnowledgeChunk } from './types.js';
 import { env } from './env.js';
+import { MHT_CRAWL_JSON } from './assets.generated.js';
 
 // In-memory store — populated at startup from disk (wrangler dev only) and by /api/train
 let chunks: KnowledgeChunk[] = [];
@@ -110,12 +111,19 @@ export function search(query: string, topK = 5): KnowledgeChunk[] {
 }
 
 /**
- * Pre-seed the knowledge base with MHT ePortal content (bilingual EN/AR).
- * Each chunk carries both English and Arabic text so retrieval works for
- * questions in either language. No-op if chunks have already been loaded.
+ * Pre-seed the knowledge base with MHT ePortal content.
+ *
+ * Two sources are merged:
+ *   1. a curated bilingual (EN/AR) seed of the main services + FAQs, so
+ *      retrieval works for questions in either language;
+ *   2. a baked snapshot of the live ePortal (`data/mht-crawl.json` → the
+ *      complete eServices catalogue and page text), produced by
+ *      `npx tsx scripts/crawl-mht.ts`.
+ *
+ * Idempotent: chunks are keyed by id, so re-seeding merely refreshes the
+ * curated + baked entries and never disturbs chunks trained at runtime.
  */
 export function seedMhtKnowledge(): void {
-  if (getChunkCount() > 0) return; // don't double-seed
   const url = 'https://stg-eportal.mht.gov.om/';
   const en = (title: string, body: string, ar: string): KnowledgeChunk => ({
     id: '',
@@ -208,7 +216,31 @@ export function seedMhtKnowledge(): void {
     return { ...chunk, id: ids[i] ?? `mht-${String(i + 1).padStart(3, '0')}` };
   });
 
-  addChunks(seed);
+  addChunks([...seed, ...crawlSeedChunks(url)]);
+}
+
+/**
+ * Turn the baked site snapshot (`data/mht-crawl.json`, inlined at build time by
+ * scripts/generate-assets.mjs) into knowledge chunks. Returns [] when the
+ * snapshot is missing or malformed.
+ */
+function crawlSeedChunks(fallbackUrl: string): KnowledgeChunk[] {
+  if (!MHT_CRAWL_JSON) return [];
+  const out: KnowledgeChunk[] = [];
+  try {
+    const data = JSON.parse(MHT_CRAWL_JSON) as {
+      pages?: Array<{ url?: string; title?: string; text?: string }>;
+    };
+    for (const page of data.pages ?? []) {
+      const text = (page.text ?? '').trim();
+      if (!text) continue;
+      const pageUrl = page.url ?? fallbackUrl;
+      out.push(...splitIntoChunks(text, page.title ?? pageUrl, pageUrl));
+    }
+  } catch {
+    // Malformed snapshot — the curated seed still applies.
+  }
+  return out;
 }
 
 /**

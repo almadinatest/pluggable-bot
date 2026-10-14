@@ -1,0 +1,263 @@
+{
+  "generatedAt": "2026-10-14T20:05:03.427Z",
+  "startUrl": "https://stg-eportal.mht.gov.om/",
+  "serviceCount": 37,
+  "pageCount": 51,
+  "pages": [
+    {
+      "url": "https://stg-eportal.mht.gov.om/",
+      "title": "MHT ePortal — eServices List",
+      "text": "eServices List\nTourism E-Services\nHeritage E-Services\nTourist Guide Licensing Services\nNew Tourist Guide License Request for Renewal of Tour Guide License Request for Cancellation of Tour Guide License Update Tourist Guide License Transfer Tourist Guide License\nAdventure Tourism\nNew License Request for Adventure Tourism Renew License Request for Adventure Tourism Update License Request for Adventure Tourism Cancellation License Request for Adventure Tourism\nCave Entry\nRequest Cave Entry Request Update Cave Entry Permit Request Cancel Cave Entry Permit\nQuality Monitoring\nTravel Agency Assessment\nTourism Land Investment Services\nRequest to Invest in Tourism Land\nHotel Licensing Services\nRequest for Initial Approval and Architectural Map Reviewing for Licenses Request for Project Progress Submission for Licenses Request for Classification/Reclassification ReIssuance Initial Hotel Establishment approval Transfer Initial Hotel Establishment approval Request for Hotel Establishment Licensing\nFine Arts Band\nRequest for Tourism Activities License – Fine Arts Band Renewal of Tourism Activity Licenses – Fine Arts Band Request for Cancelling Tourism Activities Licenses – Fine Arts Band Request for Updating Member Details in License – Fine Arts Band\nTourism Establishment Classification Certificate\nRequest Tourism Establishment Classification Certificate Renewal of Tourism Establishment Classification Certificate Cancellation of Tourism Establishment Classification Certificate\nQuality Monitoring\nLicensed Hotel Assessment Unlicensed Hotel Assessment Licensed Hotel Self Assessment\nMedia And Content\nTourism Promotion Material\nTourism Center\nTemporary Tourism Center\nMuseum And Heritage House services\nRequest for New Museum or Heritage House License Request for Renewal of Museum or Heritage House License Request for Cancel of Museum or Heritage House License Rock Sample\nEvent and Filming\nRequest for Event and Filming\n🗙\n\nStructured catalogue (group / category — service):\n- New Tourist Guide License [Tourism E-Services / Tourist Guide Licensing Services] https://stg-eportal.mht.gov.om/service/INV_LIC_S_006\n- Request for Renewal of Tour Guide License [Tourism E-Services / Tourist Guide Licensing Services] https://stg-eportal.mht.gov.om/service/INV_LIC_S_021\n- Request for Cancellation of Tour Guide License [Tourism E-Services / Tourist Guide Licensing Services] https://stg-eportal.mht.gov.om/service/INV_LIC_S_026\n- Update Tourist Guide License [Tourism E-Services / Tourist Guide Licensing Services] https://stg-eportal.mht.gov.om/service/INV_LIC_S_040\n- Transfer Tourist Guide License [Tourism E-Services / Tourist Guide Licensing Services] https://stg-eportal.mht.gov.om/service/INV_LIC_S_041\n- New License Request for Adventure Tourism [Tourism E-Services / Adventure Tourism] https://stg-eportal.mht.gov.om/service/ADV_TR_NEW_001\n- Renew License Request for Adventure Tourism [Tourism E-Services / Adventure Tourism] https://stg-eportal.mht.gov.om/service/ADV_TR_Renew_003\n- Update License Request for Adventure Tourism [Tourism E-Services / Adventure Tourism] https://stg-eportal.mht.gov.om/service/ADV_TR_Update_004\n- Cancellation License Request for Adventure Tourism [Tourism E-Services / Adventure Tourism] https://stg-eportal.mht.gov.om/service/ADV_TR_Cancel_002\n- Request Cave Entry [Tourism E-Services / Cave Entry] https://stg-eportal.mht.gov.om/service/CE_New\n- Request Update Cave Entry Permit [Tourism E-Services / Cave Entry] https://stg-eportal.mht.gov.om/service/CE_Update\n- Request Cancel Cave Entry Permit [Tourism E-Services / Cave Entry] https://stg-eportal.mht.gov.om/service/CE_Cancel\n- Travel Agency Assessment [Tourism E-Services / Quality Monitoring] https://stg-eportal.mht.gov.om/service/TTALQM\n- Request to Invest in Tourism Land [Tourism E-Services / Tourism Land Investment Services] https://stg-eportal.mht.gov.om/service/PLN_LMS_S_001\n- Request for Initial Approval and Architectural Map Reviewing for Licenses [Tourism E-Services / Hotel Licensing Services] https://stg-eportal.mht.gov.om/service/HT_TPS_S_001\n- Request for Project Progress Submission for Licenses [Tourism E-Services / Hotel Licensing Services] https://stg-eportal.mht.gov.om/service/HT_TPS_S_006\n- Request for Classification/Reclassification [Tourism E-Services / Hotel Licensing Services] https://stg-eportal.mht.gov.om/service/INV_CLS_S_001\n- ReIssuance Initial Hotel Establishment approval [Tourism E-Services / Hotel Licensing Services] https://stg-eportal.mht.gov.om/service/HT_TPS_S_003\n- Transfer Initial Hotel Establishment approval [Tourism E-Services / Hotel Licensing Services] https://stg-eportal.mht.gov.om/service/HT_TPS_S_002\n- Request for Hotel Establishment Licensing [Tourism E-Services / Hotel Licensing Services] https://stg-eportal.mht.gov.om/service/INV_LIC_S_003\n- Request for Tourism Activities License – Fine Arts Band [Tourism E-Services / Fine Arts Band] https://stg-eportal.mht.gov.om/service/ARB_S_500\n- Renewal of Tourism Activity Licenses – Fine Arts Band [Tourism E-Services / Fine Arts Band] https://stg-eportal.mht.gov.om/service/ARB_S_5001\n- Request for Cancelling Tourism Activities Licenses – Fine Arts Band [Tourism E-Services / Fine Arts Band] https://stg-eportal.mht.gov.om/service/ARB_S_5002\n- Request for Updating Member Details in License – Fine Arts Band [Tourism E-Services / Fine Arts Band] https://stg-eportal.mht.gov.om/service/ARB_S_5004\n- Request Tourism Establishment Classification Certificate [Tourism E-Services / Tourism Establishment Classification Certificate] https://stg-eportal.mht.gov.om/service/T_LIC1\n- Renewal of Tourism Establishment Classification Certificate [Tourism E-Services / Tourism Establishment Classification Certificate] https://stg-eportal.mht.gov.om/service/T_LIC2\n- Cancellation of Tourism Establishment Classification Certificate [Tourism E-Services / Tourism Establishment Classification Certificate] https://stg-eportal.mht.gov.om/service/T_LIC3\n- Licensed Hotel Assessment [Tourism E-Services / Quality Monitoring] https://stg-eportal.mht.gov.om/service/QMLHA\n- Unlicensed Hotel Assessment [Tourism E-Services / Quality Monitoring] https://stg-eportal.mht.gov.om/service/QMULEA\n- Licensed Hotel Self Assessment [Tourism E-Services / Quality Monitoring] https://stg-eportal.mht.gov.om/service/QMHSA\n- Tourism Promotion Material [Tourism E-Services / Media And Content] https://stg-eportal.mht.gov.om/service/TPM_TPS_S_005\n- Temporary Tourism Center [Tourism E-Services / Tourism Center] https://stg-eportal.mht.gov.om/service/TPM_TPS_S_001\n- Request for New Museum or Heritage House License [Heritage E-Services / Museum And Heritage House services] https://stg-eportal.mht.gov.om/service/MAH_LMH_S_001\n- Request for Renewal of Museum or Heritage House License [Heritage E-Services / Museum And Heritage House services] https://stg-eportal.mht.gov.om/service/MAH_LMH_S_021\n- Request for Cancel of Museum or Heritage House License [Heritage E-Services / Museum And Heritage House services] https://stg-eportal.mht.gov.om/service/MAH_LMH_S_022\n- Rock Sample [Heritage E-Services / Museum And Heritage House services] https://stg-eportal.mht.gov.om/service/Rock\n- Request for Event and Filming [Heritage E-Services / Event and Filming] https://stg-eportal.mht.gov.om/service/MAH_EFHL_S_001"
+    },
+    {
+      "url": "https://stg-eportal.mht.gov.om/",
+      "title": "Tourism E-Services / Tourist Guide Licensing Services — MHT eServices",
+      "text": "Category: Tourist Guide Licensing Services\nGroup: Tourism E-Services\n\nServices in this category:\n- New Tourist Guide License: https://stg-eportal.mht.gov.om/service/INV_LIC_S_006\n- Request for Renewal of Tour Guide License: https://stg-eportal.mht.gov.om/service/INV_LIC_S_021\n- Request for Cancellation of Tour Guide License: https://stg-eportal.mht.gov.om/service/INV_LIC_S_026\n- Update Tourist Guide License: https://stg-eportal.mht.gov.om/service/INV_LIC_S_040\n- Transfer Tourist Guide License: https://stg-eportal.mht.gov.om/service/INV_LIC_S_041"
+    },
+    {
+      "url": "https://stg-eportal.mht.gov.om/",
+      "title": "Tourism E-Services / Adventure Tourism — MHT eServices",
+      "text": "Category: Adventure Tourism\nGroup: Tourism E-Services\n\nServices in this category:\n- New License Request for Adventure Tourism: https://stg-eportal.mht.gov.om/service/ADV_TR_NEW_001\n- Renew License Request for Adventure Tourism: https://stg-eportal.mht.gov.om/service/ADV_TR_Renew_003\n- Update License Request for Adventure Tourism: https://stg-eportal.mht.gov.om/service/ADV_TR_Update_004\n- Cancellation License Request for Adventure Tourism: https://stg-eportal.mht.gov.om/service/ADV_TR_Cancel_002"
+    },
+    {
+      "url": "https://stg-eportal.mht.gov.om/",
+      "title": "Tourism E-Services / Cave Entry — MHT eServices",
+      "text": "Category: Cave Entry\nGroup: Tourism E-Services\n\nServices in this category:\n- Request Cave Entry: https://stg-eportal.mht.gov.om/service/CE_New\n- Request Update Cave Entry Permit: https://stg-eportal.mht.gov.om/service/CE_Update\n- Request Cancel Cave Entry Permit: https://stg-eportal.mht.gov.om/service/CE_Cancel"
+    },
+    {
+      "url": "https://stg-eportal.mht.gov.om/",
+      "title": "Tourism E-Services / Quality Monitoring — MHT eServices",
+      "text": "Category: Quality Monitoring\nGroup: Tourism E-Services\n\nServices in this category:\n- Travel Agency Assessment: https://stg-eportal.mht.gov.om/service/TTALQM\n- Licensed Hotel Assessment: https://stg-eportal.mht.gov.om/service/QMLHA\n- Unlicensed Hotel Assessment: https://stg-eportal.mht.gov.om/service/QMULEA\n- Licensed Hotel Self Assessment: https://stg-eportal.mht.gov.om/service/QMHSA"
+    },
+    {
+      "url": "https://stg-eportal.mht.gov.om/",
+      "title": "Tourism E-Services / Tourism Land Investment Services — MHT eServices",
+      "text": "Category: Tourism Land Investment Services\nGroup: Tourism E-Services\n\nServices in this category:\n- Request to Invest in Tourism Land: https://stg-eportal.mht.gov.om/service/PLN_LMS_S_001"
+    },
+    {
+      "url": "https://stg-eportal.mht.gov.om/",
+      "title": "Tourism E-Services / Hotel Licensing Services — MHT eServices",
+      "text": "Category: Hotel Licensing Services\nGroup: Tourism E-Services\n\nServices in this category:\n- Request for Initial Approval and Architectural Map Reviewing for Licenses: https://stg-eportal.mht.gov.om/service/HT_TPS_S_001\n- Request for Project Progress Submission for Licenses: https://stg-eportal.mht.gov.om/service/HT_TPS_S_006\n- Request for Classification/Reclassification: https://stg-eportal.mht.gov.om/service/INV_CLS_S_001\n- ReIssuance Initial Hotel Establishment approval: https://stg-eportal.mht.gov.om/service/HT_TPS_S_003\n- Transfer Initial Hotel Establishment approval: https://stg-eportal.mht.gov.om/service/HT_TPS_S_002\n- Request for Hotel Establishment Licensing: https://stg-eportal.mht.gov.om/service/INV_LIC_S_003"
+    },
+    {
+      "url": "https://stg-eportal.mht.gov.om/",
+      "title": "Tourism E-Services / Fine Arts Band — MHT eServices",
+      "text": "Category: Fine Arts Band\nGroup: Tourism E-Services\n\nServices in this category:\n- Request for Tourism Activities License – Fine Arts Band: https://stg-eportal.mht.gov.om/service/ARB_S_500\n- Renewal of Tourism Activity Licenses – Fine Arts Band: https://stg-eportal.mht.gov.om/service/ARB_S_5001\n- Request for Cancelling Tourism Activities Licenses – Fine Arts Band: https://stg-eportal.mht.gov.om/service/ARB_S_5002\n- Request for Updating Member Details in License – Fine Arts Band: https://stg-eportal.mht.gov.om/service/ARB_S_5004"
+    },
+    {
+      "url": "https://stg-eportal.mht.gov.om/",
+      "title": "Tourism E-Services / Tourism Establishment Classification Certificate — MHT eServices",
+      "text": "Category: Tourism Establishment Classification Certificate\nGroup: Tourism E-Services\n\nServices in this category:\n- Request Tourism Establishment Classification Certificate: https://stg-eportal.mht.gov.om/service/T_LIC1\n- Renewal of Tourism Establishment Classification Certificate: https://stg-eportal.mht.gov.om/service/T_LIC2\n- Cancellation of Tourism Establishment Classification Certificate: https://stg-eportal.mht.gov.om/service/T_LIC3"
+    },
+    {
+      "url": "https://stg-eportal.mht.gov.om/",
+      "title": "Tourism E-Services / Media And Content — MHT eServices",
+      "text": "Category: Media And Content\nGroup: Tourism E-Services\n\nServices in this category:\n- Tourism Promotion Material: https://stg-eportal.mht.gov.om/service/TPM_TPS_S_005"
+    },
+    {
+      "url": "https://stg-eportal.mht.gov.om/",
+      "title": "Tourism E-Services / Tourism Center — MHT eServices",
+      "text": "Category: Tourism Center\nGroup: Tourism E-Services\n\nServices in this category:\n- Temporary Tourism Center: https://stg-eportal.mht.gov.om/service/TPM_TPS_S_001"
+    },
+    {
+      "url": "https://stg-eportal.mht.gov.om/",
+      "title": "Heritage E-Services / Museum And Heritage House services — MHT eServices",
+      "text": "Category: Museum And Heritage House services\nGroup: Heritage E-Services\n\nServices in this category:\n- Request for New Museum or Heritage House License: https://stg-eportal.mht.gov.om/service/MAH_LMH_S_001\n- Request for Renewal of Museum or Heritage House License: https://stg-eportal.mht.gov.om/service/MAH_LMH_S_021\n- Request for Cancel of Museum or Heritage House License: https://stg-eportal.mht.gov.om/service/MAH_LMH_S_022\n- Rock Sample: https://stg-eportal.mht.gov.om/service/Rock"
+    },
+    {
+      "url": "https://stg-eportal.mht.gov.om/",
+      "title": "Heritage E-Services / Event and Filming — MHT eServices",
+      "text": "Category: Event and Filming\nGroup: Heritage E-Services\n\nServices in this category:\n- Request for Event and Filming: https://stg-eportal.mht.gov.om/service/MAH_EFHL_S_001"
+    },
+    {
+      "url": "https://stg-eportal.mht.gov.om/service/INV_LIC_S_006",
+      "title": "New Tourist Guide License",
+      "text": "Service: New Tourist Guide License\nGroup: Tourism E-Services\nCategory: Tourist Guide Licensing Services\nPortal: https://stg-eportal.mht.gov.om/\nApply and manage this eService online at: https://stg-eportal.mht.gov.om/service/INV_LIC_S_006"
+    },
+    {
+      "url": "https://stg-eportal.mht.gov.om/service/INV_LIC_S_021",
+      "title": "Request for Renewal of Tour Guide License",
+      "text": "Service: Request for Renewal of Tour Guide License\nGroup: Tourism E-Services\nCategory: Tourist Guide Licensing Services\nPortal: https://stg-eportal.mht.gov.om/\nApply and manage this eService online at: https://stg-eportal.mht.gov.om/service/INV_LIC_S_021"
+    },
+    {
+      "url": "https://stg-eportal.mht.gov.om/service/INV_LIC_S_026",
+      "title": "Request for Cancellation of Tour Guide License",
+      "text": "Service: Request for Cancellation of Tour Guide License\nGroup: Tourism E-Services\nCategory: Tourist Guide Licensing Services\nPortal: https://stg-eportal.mht.gov.om/\nApply and manage this eService online at: https://stg-eportal.mht.gov.om/service/INV_LIC_S_026"
+    },
+    {
+      "url": "https://stg-eportal.mht.gov.om/service/INV_LIC_S_040",
+      "title": "Update Tourist Guide License",
+      "text": "Service: Update Tourist Guide License\nGroup: Tourism E-Services\nCategory: Tourist Guide Licensing Services\nPortal: https://stg-eportal.mht.gov.om/\nApply and manage this eService online at: https://stg-eportal.mht.gov.om/service/INV_LIC_S_040"
+    },
+    {
+      "url": "https://stg-eportal.mht.gov.om/service/INV_LIC_S_041",
+      "title": "Transfer Tourist Guide License",
+      "text": "Service: Transfer Tourist Guide License\nGroup: Tourism E-Services\nCategory: Tourist Guide Licensing Services\nPortal: https://stg-eportal.mht.gov.om/\nApply and manage this eService online at: https://stg-eportal.mht.gov.om/service/INV_LIC_S_041"
+    },
+    {
+      "url": "https://stg-eportal.mht.gov.om/service/ADV_TR_NEW_001",
+      "title": "New License Request for Adventure Tourism",
+      "text": "Service: New License Request for Adventure Tourism\nGroup: Tourism E-Services\nCategory: Adventure Tourism\nPortal: https://stg-eportal.mht.gov.om/\nApply and manage this eService online at: https://stg-eportal.mht.gov.om/service/ADV_TR_NEW_001"
+    },
+    {
+      "url": "https://stg-eportal.mht.gov.om/service/ADV_TR_Renew_003",
+      "title": "Renew License Request for Adventure Tourism",
+      "text": "Service: Renew License Request for Adventure Tourism\nGroup: Tourism E-Services\nCategory: Adventure Tourism\nPortal: https://stg-eportal.mht.gov.om/\nApply and manage this eService online at: https://stg-eportal.mht.gov.om/service/ADV_TR_Renew_003"
+    },
+    {
+      "url": "https://stg-eportal.mht.gov.om/service/ADV_TR_Update_004",
+      "title": "Update License Request for Adventure Tourism",
+      "text": "Service: Update License Request for Adventure Tourism\nGroup: Tourism E-Services\nCategory: Adventure Tourism\nPortal: https://stg-eportal.mht.gov.om/\nApply and manage this eService online at: https://stg-eportal.mht.gov.om/service/ADV_TR_Update_004"
+    },
+    {
+      "url": "https://stg-eportal.mht.gov.om/service/ADV_TR_Cancel_002",
+      "title": "Cancellation License Request for Adventure Tourism",
+      "text": "Service: Cancellation License Request for Adventure Tourism\nGroup: Tourism E-Services\nCategory: Adventure Tourism\nPortal: https://stg-eportal.mht.gov.om/\nApply and manage this eService online at: https://stg-eportal.mht.gov.om/service/ADV_TR_Cancel_002"
+    },
+    {
+      "url": "https://stg-eportal.mht.gov.om/service/CE_New",
+      "title": "Request Cave Entry",
+      "text": "Service: Request Cave Entry\nGroup: Tourism E-Services\nCategory: Cave Entry\nPortal: https://stg-eportal.mht.gov.om/\nApply and manage this eService online at: https://stg-eportal.mht.gov.om/service/CE_New"
+    },
+    {
+      "url": "https://stg-eportal.mht.gov.om/service/CE_Update",
+      "title": "Request Update Cave Entry Permit",
+      "text": "Service: Request Update Cave Entry Permit\nGroup: Tourism E-Services\nCategory: Cave Entry\nPortal: https://stg-eportal.mht.gov.om/\nApply and manage this eService online at: https://stg-eportal.mht.gov.om/service/CE_Update"
+    },
+    {
+      "url": "https://stg-eportal.mht.gov.om/service/CE_Cancel",
+      "title": "Request Cancel Cave Entry Permit",
+      "text": "Service: Request Cancel Cave Entry Permit\nGroup: Tourism E-Services\nCategory: Cave Entry\nPortal: https://stg-eportal.mht.gov.om/\nApply and manage this eService online at: https://stg-eportal.mht.gov.om/service/CE_Cancel"
+    },
+    {
+      "url": "https://stg-eportal.mht.gov.om/service/TTALQM",
+      "title": "Travel Agency Assessment",
+      "text": "Service: Travel Agency Assessment\nGroup: Tourism E-Services\nCategory: Quality Monitoring\nPortal: https://stg-eportal.mht.gov.om/\nApply and manage this eService online at: https://stg-eportal.mht.gov.om/service/TTALQM"
+    },
+    {
+      "url": "https://stg-eportal.mht.gov.om/service/PLN_LMS_S_001",
+      "title": "Request to Invest in Tourism Land",
+      "text": "Service: Request to Invest in Tourism Land\nGroup: Tourism E-Services\nCategory: Tourism Land Investment Services\nPortal: https://stg-eportal.mht.gov.om/\nApply and manage this eService online at: https://stg-eportal.mht.gov.om/service/PLN_LMS_S_001"
+    },
+    {
+      "url": "https://stg-eportal.mht.gov.om/service/HT_TPS_S_001",
+      "title": "Request for Initial Approval and Architectural Map Reviewing for Licenses",
+      "text": "Service: Request for Initial Approval and Architectural Map Reviewing for Licenses\nGroup: Tourism E-Services\nCategory: Hotel Licensing Services\nPortal: https://stg-eportal.mht.gov.om/\nApply and manage this eService online at: https://stg-eportal.mht.gov.om/service/HT_TPS_S_001"
+    },
+    {
+      "url": "https://stg-eportal.mht.gov.om/service/HT_TPS_S_006",
+      "title": "Request for Project Progress Submission for Licenses",
+      "text": "Service: Request for Project Progress Submission for Licenses\nGroup: Tourism E-Services\nCategory: Hotel Licensing Services\nPortal: https://stg-eportal.mht.gov.om/\nApply and manage this eService online at: https://stg-eportal.mht.gov.om/service/HT_TPS_S_006"
+    },
+    {
+      "url": "https://stg-eportal.mht.gov.om/service/INV_CLS_S_001",
+      "title": "Request for Classification/Reclassification",
+      "text": "Service: Request for Classification/Reclassification\nGroup: Tourism E-Services\nCategory: Hotel Licensing Services\nPortal: https://stg-eportal.mht.gov.om/\nApply and manage this eService online at: https://stg-eportal.mht.gov.om/service/INV_CLS_S_001"
+    },
+    {
+      "url": "https://stg-eportal.mht.gov.om/service/HT_TPS_S_003",
+      "title": "ReIssuance Initial Hotel Establishment approval",
+      "text": "Service: ReIssuance Initial Hotel Establishment approval\nGroup: Tourism E-Services\nCategory: Hotel Licensing Services\nPortal: https://stg-eportal.mht.gov.om/\nApply and manage this eService online at: https://stg-eportal.mht.gov.om/service/HT_TPS_S_003"
+    },
+    {
+      "url": "https://stg-eportal.mht.gov.om/service/HT_TPS_S_002",
+      "title": "Transfer Initial Hotel Establishment approval",
+      "text": "Service: Transfer Initial Hotel Establishment approval\nGroup: Tourism E-Services\nCategory: Hotel Licensing Services\nPortal: https://stg-eportal.mht.gov.om/\nApply and manage this eService online at: https://stg-eportal.mht.gov.om/service/HT_TPS_S_002"
+    },
+    {
+      "url": "https://stg-eportal.mht.gov.om/service/INV_LIC_S_003",
+      "title": "Request for Hotel Establishment Licensing",
+      "text": "Service: Request for Hotel Establishment Licensing\nGroup: Tourism E-Services\nCategory: Hotel Licensing Services\nPortal: https://stg-eportal.mht.gov.om/\nApply and manage this eService online at: https://stg-eportal.mht.gov.om/service/INV_LIC_S_003"
+    },
+    {
+      "url": "https://stg-eportal.mht.gov.om/service/ARB_S_500",
+      "title": "Request for Tourism Activities License – Fine Arts Band",
+      "text": "Service: Request for Tourism Activities License – Fine Arts Band\nGroup: Tourism E-Services\nCategory: Fine Arts Band\nPortal: https://stg-eportal.mht.gov.om/\nApply and manage this eService online at: https://stg-eportal.mht.gov.om/service/ARB_S_500"
+    },
+    {
+      "url": "https://stg-eportal.mht.gov.om/service/ARB_S_5001",
+      "title": "Renewal of Tourism Activity Licenses – Fine Arts Band",
+      "text": "Service: Renewal of Tourism Activity Licenses – Fine Arts Band\nGroup: Tourism E-Services\nCategory: Fine Arts Band\nPortal: https://stg-eportal.mht.gov.om/\nApply and manage this eService online at: https://stg-eportal.mht.gov.om/service/ARB_S_5001"
+    },
+    {
+      "url": "https://stg-eportal.mht.gov.om/service/ARB_S_5002",
+      "title": "Request for Cancelling Tourism Activities Licenses – Fine Arts Band",
+      "text": "Service: Request for Cancelling Tourism Activities Licenses – Fine Arts Band\nGroup: Tourism E-Services\nCategory: Fine Arts Band\nPortal: https://stg-eportal.mht.gov.om/\nApply and manage this eService online at: https://stg-eportal.mht.gov.om/service/ARB_S_5002"
+    },
+    {
+      "url": "https://stg-eportal.mht.gov.om/service/ARB_S_5004",
+      "title": "Request for Updating Member Details in License – Fine Arts Band",
+      "text": "Service: Request for Updating Member Details in License – Fine Arts Band\nGroup: Tourism E-Services\nCategory: Fine Arts Band\nPortal: https://stg-eportal.mht.gov.om/\nApply and manage this eService online at: https://stg-eportal.mht.gov.om/service/ARB_S_5004"
+    },
+    {
+      "url": "https://stg-eportal.mht.gov.om/service/T_LIC1",
+      "title": "Request Tourism Establishment Classification Certificate",
+      "text": "Service: Request Tourism Establishment Classification Certificate\nGroup: Tourism E-Services\nCategory: Tourism Establishment Classification Certificate\nPortal: https://stg-eportal.mht.gov.om/\nApply and manage this eService online at: https://stg-eportal.mht.gov.om/service/T_LIC1"
+    },
+    {
+      "url": "https://stg-eportal.mht.gov.om/service/T_LIC2",
+      "title": "Renewal of Tourism Establishment Classification Certificate",
+      "text": "Service: Renewal of Tourism Establishment Classification Certificate\nGroup: Tourism E-Services\nCategory: Tourism Establishment Classification Certificate\nPortal: https://stg-eportal.mht.gov.om/\nApply and manage this eService online at: https://stg-eportal.mht.gov.om/service/T_LIC2"
+    },
+    {
+      "url": "https://stg-eportal.mht.gov.om/service/T_LIC3",
+      "title": "Cancellation of Tourism Establishment Classification Certificate",
+      "text": "Service: Cancellation of Tourism Establishment Classification Certificate\nGroup: Tourism E-Services\nCategory: Tourism Establishment Classification Certificate\nPortal: https://stg-eportal.mht.gov.om/\nApply and manage this eService online at: https://stg-eportal.mht.gov.om/service/T_LIC3"
+    },
+    {
+      "url": "https://stg-eportal.mht.gov.om/service/QMLHA",
+      "title": "Licensed Hotel Assessment",
+      "text": "Service: Licensed Hotel Assessment\nGroup: Tourism E-Services\nCategory: Quality Monitoring\nPortal: https://stg-eportal.mht.gov.om/\nApply and manage this eService online at: https://stg-eportal.mht.gov.om/service/QMLHA"
+    },
+    {
+      "url": "https://stg-eportal.mht.gov.om/service/QMULEA",
+      "title": "Unlicensed Hotel Assessment",
+      "text": "Service: Unlicensed Hotel Assessment\nGroup: Tourism E-Services\nCategory: Quality Monitoring\nPortal: https://stg-eportal.mht.gov.om/\nApply and manage this eService online at: https://stg-eportal.mht.gov.om/service/QMULEA"
+    },
+    {
+      "url": "https://stg-eportal.mht.gov.om/service/QMHSA",
+      "title": "Licensed Hotel Self Assessment",
+      "text": "Service: Licensed Hotel Self Assessment\nGroup: Tourism E-Services\nCategory: Quality Monitoring\nPortal: https://stg-eportal.mht.gov.om/\nApply and manage this eService online at: https://stg-eportal.mht.gov.om/service/QMHSA"
+    },
+    {
+      "url": "https://stg-eportal.mht.gov.om/service/TPM_TPS_S_005",
+      "title": "Tourism Promotion Material",
+      "text": "Service: Tourism Promotion Material\nGroup: Tourism E-Services\nCategory: Media And Content\nPortal: https://stg-eportal.mht.gov.om/\nApply and manage this eService online at: https://stg-eportal.mht.gov.om/service/TPM_TPS_S_005"
+    },
+    {
+      "url": "https://stg-eportal.mht.gov.om/service/TPM_TPS_S_001",
+      "title": "Temporary Tourism Center",
+      "text": "Service: Temporary Tourism Center\nGroup: Tourism E-Services\nCategory: Tourism Center\nPortal: https://stg-eportal.mht.gov.om/\nApply and manage this eService online at: https://stg-eportal.mht.gov.om/service/TPM_TPS_S_001"
+    },
+    {
+      "url": "https://stg-eportal.mht.gov.om/service/MAH_LMH_S_001",
+      "title": "Request for New Museum or Heritage House License",
+      "text": "Service: Request for New Museum or Heritage House License\nGroup: Heritage E-Services\nCategory: Museum And Heritage House services\nPortal: https://stg-eportal.mht.gov.om/\nApply and manage this eService online at: https://stg-eportal.mht.gov.om/service/MAH_LMH_S_001"
+    },
+    {
+      "url": "https://stg-eportal.mht.gov.om/service/MAH_LMH_S_021",
+      "title": "Request for Renewal of Museum or Heritage House License",
+      "text": "Service: Request for Renewal of Museum or Heritage House License\nGroup: Heritage E-Services\nCategory: Museum And Heritage House services\nPortal: https://stg-eportal.mht.gov.om/\nApply and manage this eService online at: https://stg-eportal.mht.gov.om/service/MAH_LMH_S_021"
+    },
+    {
+      "url": "https://stg-eportal.mht.gov.om/service/MAH_LMH_S_022",
+      "title": "Request for Cancel of Museum or Heritage House License",
+      "text": "Service: Request for Cancel of Museum or Heritage House License\nGroup: Heritage E-Services\nCategory: Museum And Heritage House services\nPortal: https://stg-eportal.mht.gov.om/\nApply and manage this eService online at: https://stg-eportal.mht.gov.om/service/MAH_LMH_S_022"
+    },
+    {
+      "url": "https://stg-eportal.mht.gov.om/service/Rock",
+      "title": "Rock Sample",
+      "text": "Service: Rock Sample\nGroup: Heritage E-Services\nCategory: Museum And Heritage House services\nPortal: https://stg-eportal.mht.gov.om/\nApply and manage this eService online at: https://stg-eportal.mht.gov.om/service/Rock"
+    },
+    {
+      "url": "https://stg-eportal.mht.gov.om/service/MAH_EFHL_S_001",
+      "title": "Request for Event and Filming",
+      "text": "Service: Request for Event and Filming\nGroup: Heritage E-Services\nCategory: Event and Filming\nPortal: https://stg-eportal.mht.gov.om/\nApply and manage this eService online at: https://stg-eportal.mht.gov.om/service/MAH_EFHL_S_001"
+    },
+    {
+      "url": "https://stg-auth.mht.gov.om/Account/Login?ui_locales=en&ReturnUrl=%2Fconnect%2Fauthorize%3Fclient_id%3Dmht%26redirect_uri%3Dhttps%253A%252F%252Fstg-eportal.mht.gov.om%252Fsignin-oidc%26response_type%3Dcode%26scope%3Dopenid%2520profile%2520email%2520phone%26code_challenge%3DbK8KjCIThyinyKeqr7qF5WEl78BAg1nnmyUN-T1nXwA%26code_challenge_method%3DS256%26response_mode%3Dform_post%26nonce%3D639276051032552628.OGE4ZjU5YjktYmZhYS00MWIwLWI3YzUtMmQwYTQxN2YyMDM5Yzg2YzEzYzMtODA5Yy00NTEwLWExODEtNzYzZTE3NDI2NTA4%26culture%3Den%26ui_locales%3Den%26acr_values%3Dculture%253Aen%26state%3DCfDJ8GCBYS0p9CVPmjY0xoNWoDy9hb1SaBdonWyFzbkkALxITahHT1PY1qvNKsqXmQ5xhHe16u7fYumkM2SfNNnk4voUA37Mqal2jj17r8iqeMRon3TyqIuHIVuYMZYxQMjARyXWp0QvWS_UQgIGu4LEWsrPAofzIXg1HG0wx22SgUqAdebGQZly9lWVC6o2Y3bfQ2wHC0PyFmYp5JOxe1-9_2JtTu3Cjk02xc9PXfQKDpgcXByypBejeC2YLTS7Q0WD0BOpj8avN_sUxMAJl9yWNppQ-cxIbwygflkUjqSs71kPfQlmIVOrR8LttNKCvxREInrvoqI0XYXUf5eKQ4gkeDWQcqsYLxpHpPlsHuGPEN52TwU1IkCL_m4GBq8EP5o2IQKv5HlaiAMaUMO4HX1tCKa0ygB5XkvjcpP1oDLKaD7DKdfA8r0B7zwr4JIPHspwW5EUvU1zPKE-dPZHtDAyp4I%26x-client-SKU%3DID_NET9_0%26x-client-ver%3D8.9.0.0",
+      "title": "Sign In - MHT SSO Portal",
+      "text": "Sign In\nBack\nLDAP Directory\nUsername\nPassword\nSign In\nBack\nMobile PKI\nMobile Number\n+968\nChallenge Code\nSend Authentication Request\nHelp"
+    }
+  ]
+}

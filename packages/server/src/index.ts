@@ -2,11 +2,13 @@ import { Hono } from 'hono';
 import { cors } from 'hono/cors';
 import { chatRoute } from './chat.js';
 import { trainRoute } from './train.js';
-import { getChunkCount, seedMhtKnowledge } from './knowledge.js';
+import { getChunkCount, seedMhtKnowledge, addChunks, splitIntoChunks } from './knowledge.js';
 import { env } from './env.js';
 import { WIDGET_JS, MHT_HTML, INDEX_HTML, VIEW_HTML, PLUG_HTML } from './assets.generated.js';
 import { fetchUrlPage } from './extract.js';
-import { fetchRawPage, rewriteProxiedHtml } from './proxy.js';
+import { crawlSite } from './crawl.js';
+import { fetchRawResource, rewriteProxiedHtml, rewriteCss } from './proxy.js';
+import type { KnowledgeChunk } from './types.js';
 
 // Pre-seed MHT knowledge base at startup
 seedMhtKnowledge();
@@ -47,19 +49,35 @@ app.get('/api/reader', async (c) => {
 app.all('/proxy', async (c) => {
   const url = c.req.query('url') ?? '';
   if (!url) return c.text('url required', 400);
+  // Absolute base for our own /proxy links — required because the target page
+  // sets <base href="target/">, which would otherwise re-resolve them.
+  const selfOrigin = env.publicApiUrl || new URL(c.req.url).origin;
   try {
     const init: RequestInit = {};
     if (c.req.method === 'POST') {
       init.method = 'POST';
       init.body = await c.req.formData();
     }
-    const page = await fetchRawPage(url, init);
-    const isHtml = /html/i.test(page.contentType);
-    const body = isHtml ? rewriteProxiedHtml(page.html, page.finalUrl) : page.html;
+    const res = await fetchRawResource(url, init);
+    const ct = res.contentType;
+
+    let body: string | Uint8Array;
+    let contentType = ct;
+    if (/html/i.test(ct)) {
+      body = rewriteProxiedHtml(new TextDecoder().decode(res.bytes), res.finalUrl, selfOrigin);
+      contentType = 'text/html; charset=utf-8';
+    } else if (/css/i.test(ct)) {
+      body = rewriteCss(new TextDecoder().decode(res.bytes), res.finalUrl, selfOrigin);
+      contentType = 'text/css; charset=utf-8';
+    } else {
+      // Binary passthrough (fonts, images, …) so bytes are not mangled.
+      body = res.bytes;
+    }
+
     return new Response(body, {
-      status: page.status >= 400 ? page.status : 200,
+      status: res.status >= 400 ? res.status : 200,
       headers: {
-        'Content-Type': isHtml ? 'text/html; charset=utf-8' : page.contentType,
+        'Content-Type': contentType,
         'Cache-Control': 'no-store',
       },
     });
@@ -69,6 +87,40 @@ app.all('/proxy', async (c) => {
       status: 400,
       headers: { 'Content-Type': 'text/html; charset=utf-8' },
     });
+  }
+});
+
+// Crawl a whole site and index all of its text. Bounded so it stays within
+// serverless time limits; the results live in the in-memory store for the life
+// of the instance. (The MHT ePortal snapshot is baked in at build time.)
+app.post('/api/crawl', async (c) => {
+  let body: { url?: string; maxPages?: number } = {};
+  try {
+    body = await c.req.json();
+  } catch {
+    /* allow empty body */
+  }
+  const url = (body.url ?? '').trim();
+  if (!url) return c.json({ error: 'url required' }, 400);
+
+  const maxPages = Math.min(Math.max(Number(body.maxPages) || 120, 1), 300);
+  try {
+    const { pages, serviceCount } = await crawlSite(url, { maxPages });
+    const chunks: KnowledgeChunk[] = [];
+    for (const page of pages) {
+      if (!page.text.trim()) continue;
+      chunks.push(...splitIntoChunks(page.text, page.title, page.url));
+    }
+    addChunks(chunks);
+    return c.json({
+      pages: pages.length,
+      services: serviceCount,
+      chunksAdded: chunks.length,
+      total: getChunkCount(),
+    });
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    return c.json({ error: msg }, 400);
   }
 });
 
